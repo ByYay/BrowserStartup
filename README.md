@@ -1,4 +1,4 @@
-# Custom New Tab Dashboard
+# Browser Startup
 
 A clean, customizable browser **new tab** dashboard built with vanilla **HTML, CSS, and JavaScript** — featuring quick-launch shortcuts, productivity widgets, multiple themes, and fully local settings. No build step, no backend, no tracking.
 

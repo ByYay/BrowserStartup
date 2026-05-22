@@ -87,7 +87,7 @@ This is a Chrome **Manifest V3** extension that overrides the new tab page.
 
 1. Clone or download this repository.
    ```bash
-   git clone https://github.com/ByYay/custom-new-tab-dashboard.git
+   git clone https://github.com/ByYay/BrowserStartup.git
    ```
 2. Open Chrome and go to `chrome://extensions/`.
 3. Enable **Developer mode** (top-right toggle).

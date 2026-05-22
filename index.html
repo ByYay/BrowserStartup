@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom New Tab Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23f5f7fa;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23c3cfe2;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='50' cy='50' r='45' fill='url(%23grad)' stroke='%233498db' stroke-width='2'/%3E%3Ctext x='50' y='60' text-anchor='middle' fill='%232c3e50' font-family='Arial, sans-serif' font-size='28' font-weight='bold'%3EN%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=SF+Pro+Display:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/widgets.css">
+    <link rel="stylesheet" href="css/calendar.css">
+    <link rel="stylesheet" href="css/calculator.css">
+    <link rel="stylesheet" href="css/password.css">
+    <link rel="stylesheet" href="css/weather.css">
+    <link rel="stylesheet" href="css/clock.css">
+    <link rel="stylesheet" href="css/shortcuts.css?v=2">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/settings.css">
+</head>
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="header">
+                <h1 class="title" data-tr="title">Custom New Tab Dashboard</h1>
+                <p class="greeting" id="greeting"></p>
+            </div>
+
+            <div class="search-section">
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <textarea class="search-input" id="searchInput" data-tr="search-placeholder" placeholder="" onkeypress="handleSearch(event)" rows="1"></textarea>
+                        <div class="chatgpt-toggle" id="chatgptToggle" onclick="toggleChatGPT()" title="Toggle ChatGPT mode">
+                            <i class="fas fa-microchip"></i>
+                        </div>
+                    </div>
+                    <button class="search-button" onclick="performSearch()" id="searchButton" data-tr="search-button">Search</button>
+                </div>
+            </div>
+
+            <div class="shortcuts">
+                <a href="https://google.com" class="shortcut translate">
+                    <img src="https://www.google.com/favicon.ico" alt="Google">
+                    <span>Google</span>
+                </a>
+                <a href="https://github.com" class="shortcut github">
+                    <i class="fab fa-github"></i>
+                    <span>GitHub</span>
+                </a>
+                <a href="https://youtube.com" class="shortcut youtube">
+                    <i class="fab fa-youtube"></i>
+                    <span>YouTube</span>
+                </a>
+                <a href="https://gmail.com" class="shortcut gmail">
+                    <img src="https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico" alt="Gmail">
+                    <span>Gmail</span>
+                </a>
+                <a href="https://stackoverflow.com" class="shortcut stackoverflow">
+                    <i class="fab fa-stack-overflow"></i>
+                    <span>Stack Overflow</span>
+                </a>
+                <a href="https://chat.openai.com" class="shortcut chatgpt">
+                    <i class="fas fa-microchip"></i>
+                    <span>ChatGPT</span>
+                </a>
+            </div>
+
+            <div class="footer">
+                <p class="datetime" id="datetime"></p>
+            </div>
+        </div>
+
+        <div class="widget-container">
+            <div class="widget-toggle">
+                <div class="widget-liquid-indicator" id="liquidIndicator"></div>
+                <button class="widget-toggle-btn active" id="calendarToggle" onclick="showWidget('calendar')">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span data-tr="calendar-title">Calendar</span>
+                </button>
+                <button class="widget-toggle-btn" id="calculatorToggle" onclick="showWidget('calculator')">
+                    <i class="fas fa-calculator"></i>
+                    <span data-tr="calculator-title">Calculator</span>
+                </button>
+                <button class="widget-toggle-btn" id="passwordToggle" onclick="showWidget('password')">
+                    <i class="fas fa-key"></i>
+                    <span data-tr="password-title">Password</span>
+                </button>
+                <button class="widget-toggle-btn" id="weatherToggle" onclick="showWidget('weather')">
+                    <i class="fas fa-cloud-sun"></i>
+                    <span data-tr="weather-title">Weather</span>
+                </button>
+                <button class="widget-toggle-btn" id="clockToggle" onclick="showWidget('clock')">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span data-tr="pomodoro-title">Pomodoro</span>
+                </button>
+            </div>
+
+            <div class="calendar-widget widget-content active" id="calendarWidget">
+                <div class="calendar-header">
+                    <div class="calendar-month" id="calendarMonth">July 2025</div>
+                </div>
+                <div class="calendar-weekdays" id="calendarWeekdays">
+                </div>
+                <div class="calendar-weeks" id="calendarWeeks">
+                </div>
+                <div class="week-number-container">
+                    <div class="week-number" id="currentWeekNumber">W28</div>
+                </div>
+                <div class="calendar-legend">
+                    <div class="legend-item">
+                        <div class="legend-color legend-today"></div>
+                        <span data-tr="today">Today</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color legend-weekend"></div>
+                        <span data-tr="weekend">Weekend</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="calculator-widget widget-content" id="calculatorWidget">
+                <div class="calculator">
+                    <div class="calculator-display">
+                        <div class="display-secondary" id="calculatorSecondary"></div>
+                        <div class="display-text" id="calculatorDisplay">0</div>
+                    </div>
+                    <div class="calculator-buttons">
+                        <button class="calc-btn clear" onclick="clearCalculator()" data-key="Escape">
+                            <span class="btn-text">AC</span>
+                            <span class="btn-key">Esc</span>
+                        </button>
+                        <button class="calc-btn function" onclick="backspace()" data-key="Backspace">
+                            <span class="btn-text">⌫</span>
+                            <span class="btn-key">⌫</span>
+                        </button>
+                        <button class="calc-btn function" onclick="appendToDisplay('%')" data-key="%">
+                            <span class="btn-text">%</span>
+                            <span class="btn-key">%</span>
+                        </button>
+                        <button class="calc-btn operator" onclick="appendToDisplay('/')" data-key="/">
+                            <span class="btn-text">÷</span>
+                            <span class="btn-key">/</span>
+                        </button>
+                        
+                        <button class="calc-btn number" onclick="appendToDisplay('7')" data-key="7">
+                            <span class="btn-text">7</span>
+                            <span class="btn-key">7</span>
+                        </button>
+                        <button class="calc-btn number" onclick="appendToDisplay('8')" data-key="8">
+                            <span class="btn-text">8</span>
+                            <span class="btn-key">8</span>
+                        </button>
+                        <button class="calc-btn number" onclick="appendToDisplay('9')" data-key="9">
+                            <span class="btn-text">9</span>
+                            <span class="btn-key">9</span>
+                        </button>
+                        <button class="calc-btn operator" onclick="appendToDisplay('*')" data-key="*">
+                            <span class="btn-text">×</span>
+                            <span class="btn-key">*</span>
+                        </button>
+                        
+                        <button class="calc-btn number" onclick="appendToDisplay('4')" data-key="4">
+                            <span class="btn-text">4</span>
+                            <span class="btn-key">4</span>
+                        </button>
+                        <button class="calc-btn number" onclick="appendToDisplay('5')" data-key="5">
+                            <span class="btn-text">5</span>
+                            <span class="btn-key">5</span>
+                        </button>
+                        <button class="calc-btn number" onclick="appendToDisplay('6')" data-key="6">
+                            <span class="btn-text">6</span>
+                            <span class="btn-key">6</span>
+                        </button>
+                        <button class="calc-btn operator" onclick="appendToDisplay('-')" data-key="-">
+                            <span class="btn-text">-</span>
+                            <span class="btn-key">-</span>
+                        </button>
+                        
+                        <button class="calc-btn number" onclick="appendToDisplay('1')" data-key="1">
+                            <span class="btn-text">1</span>
+                            <span class="btn-key">1</span>
+                        </button>
+                        <button class="calc-btn number" onclick="appendToDisplay('2')" data-key="2">
+                            <span class="btn-text">2</span>
+                            <span class="btn-key">2</span>
+                        </button>
+                        <button class="calc-btn number" onclick="appendToDisplay('3')" data-key="3">
+                            <span class="btn-text">3</span>
+                            <span class="btn-key">3</span>
+                        </button>
+                        <button class="calc-btn operator" onclick="appendToDisplay('+')" data-key="+">
+                            <span class="btn-text">+</span>
+                            <span class="btn-key">+</span>
+                        </button>
+                        
+                        <button class="calc-btn number zero" onclick="appendToDisplay('0')" data-key="0">
+                            <span class="btn-text">0</span>
+                            <span class="btn-key">0</span>
+                        </button>
+                        <button class="calc-btn number" onclick="appendToDisplay('.')" data-key=".">
+                            <span class="btn-text">.</span>
+                            <span class="btn-key">.</span>
+                        </button>
+                        <button class="calc-btn equals" onclick="calculateResult()" data-key="Enter">
+                            <span class="btn-text">=</span>
+                            <span class="btn-key">↵</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="password-widget widget-content" id="passwordWidget">
+                <div class="password-generator">
+                    <div class="password-display">
+                        <input type="text" class="password-output" id="passwordOutput" readonly placeholder="Generated password will appear here...">
+                        <button class="copy-btn" id="copyBtn" onclick="copyPassword()" title="Copy to clipboard">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="password-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <span class="strength-text" id="strengthText" data-tr="strength-weak">Weak</span>
+                    </div>
+                    
+                    <div class="password-options">
+                        <div class="option-group">
+                            <label class="option-label">
+                                <span data-tr="password-length">Length:</span>
+                                <input type="range" class="length-slider" id="lengthSlider" min="4" max="50" value="24" oninput="updateLength()">
+                                <span class="length-value" id="lengthValue">24</span>
+                            </label>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="includeNumbers" checked onchange="generatePassword()">
+                                <span class="checkbox-custom"></span>
+                                <span data-tr="include-numbers">Include Numbers (0-9)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="includeUppercase" checked onchange="generatePassword()">
+                                <span class="checkbox-custom"></span>
+                                <span data-tr="include-uppercase">Include Uppercase (A-Z)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="includeLowercase" checked onchange="generatePassword()">
+                                <span class="checkbox-custom"></span>
+                                <span data-tr="include-lowercase">Include Lowercase (a-z)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="includeSpecial" checked onchange="generatePassword()">
+                                <span class="checkbox-custom"></span>
+                                <span data-tr="include-special">Include Special (!@#$%^&*)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="option-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="excludeSimilar" onchange="generatePassword()">
+                                <span class="checkbox-custom"></span>
+                                <span data-tr="exclude-similar">Exclude Similar (0, O, l, I)</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button class="generate-btn" onclick="generatePassword()" data-tr="generate-password">
+                        <i class="fas fa-sync-alt"></i>
+                        Generate Password
+                    </button>
+                </div>
+            </div>
+
+            <div class="weather-widget widget-content" id="weatherWidget">
+                <div class="weather-container">
+                    <div class="weather-header">
+                        <div class="weather-location">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span id="weatherLocation">Istanbul, Turkey</span>
+                        </div>
+                        <div class="weather-update-time" id="weatherUpdateTime" data-tr="updated-now">
+                            Updated now
+                        </div>
+                    </div>
+                    
+                    <div class="weather-main">
+                        <div class="weather-icon-container">
+                            <div class="weather-icon" id="weatherIcon">
+                                <i class="fas fa-sun"></i>
+                            </div>
+                            <div class="weather-animation" id="weatherAnimation"></div>
+                        </div>
+                        
+                        <div class="weather-info">
+                            <div class="weather-temp">
+                                <span class="temp-value" id="tempValue">25</span>
+                                <span class="temp-unit">°C</span>
+                            </div>
+                            <div class="weather-description" id="weatherDescription" data-tr="weather-sunny">
+                                Sunny
+                            </div>
+                            <div class="weather-feels-like">
+                                <span data-tr="feels-like">Feels like</span> <span id="feelsLike">27°C</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-details">
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-eye"></i>
+                            </div>
+                            <div class="detail-info">
+                                <span class="detail-label" data-tr="visibility">Visibility</span>
+                                <span class="detail-value" id="visibility">10 km</span>
+                            </div>
+                        </div>
+                        
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-tint"></i>
+                            </div>
+                            <div class="detail-info">
+                                <span class="detail-label" data-tr="humidity">Humidity</span>
+                                <span class="detail-value" id="humidity">65%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-wind"></i>
+                            </div>
+                            <div class="detail-info">
+                                <span class="detail-label" data-tr="wind-speed">Wind</span>
+                                <span class="detail-value" id="windSpeed">12 km/h</span>
+                            </div>
+                        </div>
+                        
+                        <div class="weather-detail-item">
+                            <div class="detail-icon">
+                                <i class="fas fa-thermometer-half"></i>
+                            </div>
+                            <div class="detail-info">
+                                <span class="detail-label" data-tr="pressure">Pressure</span>
+                                <span class="detail-value" id="pressure">1013 hPa</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-forecast">
+                        <div class="forecast-title" data-tr="forecast-title">5-Day Forecast</div>
+                        <div class="forecast-container" id="forecastContainer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="clock-widget widget-content" id="clockWidget">
+                <div class="clock-container">
+                    <div class="clock-header">
+                        <div class="clock-title" data-tr="pomodoro-title">Pomodoro</div>
+                        <div class="pomodoro-phase-pill" id="pomodoroPhaseLabel" data-tr="pomodoro-work-phase">Work</div>
+                    </div>
+                    <div class="clock-display">
+                        <div class="pomodoro-clock">
+                            <div class="time-display">
+                                <div class="time-main" id="pomodoroTime">25:00</div>
+                            </div>
+                            <div class="pomodoro-progress-wrap" aria-hidden="true">
+                                <div class="pomodoro-progress-track">
+                                    <div class="pomodoro-progress-fill" id="pomodoroProgressFill"></div>
+                                </div>
+                            </div>
+                            <div class="pomodoro-meta">
+                                <div class="pomodoro-meta-item">
+                                    <span class="meta-label" data-tr="pomodoro-work-duration">Work</span>
+                                    <span class="meta-value" id="pomodoroWorkDisplay">25 dk</span>
+                                </div>
+                                <div class="pomodoro-meta-item">
+                                    <span class="meta-label" data-tr="pomodoro-break-duration">Break</span>
+                                    <span class="meta-value" id="pomodoroBreakDisplay">5 dk</span>
+                                </div>
+                                <div class="pomodoro-meta-item">
+                                    <span class="meta-label" data-tr="pomodoro-session-count">Session</span>
+                                    <span class="meta-value" id="pomodoroSessionCount">0</span>
+                                </div>
+                            </div>
+                            <div class="pomodoro-controls">
+                                <button class="pomodoro-btn primary" id="pomodoroStartStopBtn" onclick="clockWidget.toggleStartStop()">
+                                    <i class="fas fa-play"></i>
+                                    <span id="pomodoroStartStopText" data-tr="pomodoro-start">Start</span>
+                                </button>
+                                <button class="pomodoro-btn secondary" id="pomodoroPauseResumeBtn" onclick="clockWidget.togglePauseResume()" disabled>
+                                    <i class="fas fa-pause"></i>
+                                    <span id="pomodoroPauseResumeText" data-tr="pomodoro-pause">Pause</span>
+                                </button>
+                                <button class="pomodoro-btn secondary" id="pomodoroSkipBtn" onclick="clockWidget.skipPhase()" disabled>
+                                    <i class="fas fa-forward"></i>
+                                    <span id="pomodoroSkipText" data-tr="pomodoro-skip">Skip</span>
+                                </button>
+                            </div>
+                            <div class="pomodoro-status" id="pomodoroStatusText" data-tr="pomodoro-ready">Ready to focus</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="fullscreen-toggle" onclick="toggleFullscreen()" title="Tam Ekran">
+        <i class="fas fa-expand" id="fullscreenIcon"></i>
+    </button>
+
+    <div class="settings-toggle" onclick="toggleSettings()" title="Settings">
+        <i class="fas fa-cog"></i>
+        <span>Settings</span>
+    </div>
+
+    <div class="settings-overlay" id="settingsOverlay" onclick="closeSettings()"></div>
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+            <h2><i class="fas fa-cog"></i> <span id="settings-title">Settings</span></h2>
+            <button class="settings-close-btn" onclick="closeSettings()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="settings-body">
+
+            <div class="settings-section">
+                <div class="settings-section-title" id="settings-username-label">Username</div>
+                <div class="settings-field">
+                    <div class="settings-input-row">
+                        <input type="text" id="settingsUsername" placeholder="User" maxlength="40">
+                        <button class="settings-btn settings-btn-primary" onclick="saveUsername()" id="settings-username-save">Save</button>
+                    </div>
+                    <div class="settings-feedback" id="username-feedback"></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" id="settings-language-label">Language / Dil</div>
+                <div class="settings-field">
+                    <select id="settingsLanguage" onchange="applyLanguageSetting()">
+                        <option value="tr">🇹🇷 Türkçe</option>
+                        <option value="en">🇬🇧 English</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" id="settings-theme-label" data-tr="settings-theme-label">Theme</div>
+                <div class="settings-field">
+                    <div class="theme-buttons-container">
+                        <button class="theme-btn" id="themeAutoBtn" onclick="setTheme('auto')" title="Auto">
+                            <i class="fas fa-adjust"></i>
+                            <span data-tr="theme-auto">Auto</span>
+                        </button>
+                        <button class="theme-btn" id="themeLightBtn" onclick="setTheme('light')" title="Light">
+                            <i class="fas fa-sun"></i>
+                            <span data-tr="theme-light">Light</span>
+                        </button>
+                        <button class="theme-btn" id="themeDarkBtn" onclick="setTheme('dark')" title="Dark">
+                            <i class="fas fa-moon"></i>
+                            <span data-tr="theme-dark">Dark</span>
+                        </button>
+                        <button class="theme-btn" id="themeMidnightBtn" onclick="setTheme('midnight')" title="Midnight">
+                            <i class="fas fa-star"></i>
+                            <span data-tr="theme-midnight">Midnight</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" id="settings-background-label">Background</div>
+                <div class="settings-field">
+                    <div class="background-type-selector">
+                        <label class="radio-label">
+                            <input type="radio" name="backgroundType" value="theme" onchange="handleBackgroundTypeChange('theme')">
+                            <span id="settings-bg-theme-option" data-tr="settings-bg-theme-option">Theme Background</span>
+                        </label>
+                        <label class="radio-label">
+                            <input type="radio" name="backgroundType" value="upload" onchange="handleBackgroundTypeChange('upload')">
+                            <span id="settings-bg-upload-option" data-tr="settings-bg-upload-option">Upload Images</span>
+                        </label>
+                    </div>
+
+                    <div id="themeBackgroundSection" style="margin-top: 15px;">
+                    </div>
+
+                    <div id="uploadBackgroundSection" style="display: none;">
+                        <button class="settings-btn settings-btn-secondary settings-btn-full" onclick="uploadBackgroundImage()" id="settings-bg-upload">
+                            <i class="fas fa-upload"></i> <span id="settings-bg-upload-btn-text" data-tr="settings-bg-upload-btn-text">Upload Images</span>
+                        </button>
+
+                        <div class="filter-control" style="margin-top: 15px;">
+                            <label style="display: flex; justify-content: space-between;">
+                                <span id="settings-bg-blur-label" data-tr="settings-bg-blur-label">Blur:</span>
+                                <span id="blurValue">5</span><span>px</span>
+                            </label>
+                            <input type="range" id="backgroundBlur" min="0" max="60" value="5" oninput="setBackgroundBlur(this.value); updateBlurValue()" class="slider">
+                        </div>
+
+                        <div class="filter-control">
+                            <label style="display: flex; justify-content: space-between;">
+                                <span id="settings-bg-brightness-label" data-tr="settings-bg-brightness-label">Brightness:</span>
+                                <span id="brightnessValue">100%</span>
+                            </label>
+                            <input type="range" id="backgroundBrightness" min="0" max="200" value="100" oninput="setBackgroundBrightness(this.value); updateBrightnessValue()" class="slider">
+                        </div>
+
+                        <div class="filter-control">
+                            <label style="display: flex; justify-content: space-between;">
+                                <span id="settings-bg-contrast-label" data-tr="settings-bg-contrast-label">Contrast:</span>
+                                <span id="contrastValue">100%</span>
+                            </label>
+                            <input type="range" id="backgroundContrast" min="0" max="200" value="100" oninput="setBackgroundContrast(this.value); updateContrastValue()" class="slider">
+                        </div>
+
+                        <div id="settings-bg-images-label" style="margin-top: 15px; font-weight: 500; margin-bottom: 10px;" data-tr="settings-bg-images-label">Images</div>
+                        <div id="uploadedBackgroundImages" class="background-images-list"></div>
+
+                        <div id="backgroundRotationControls" style="display: none; margin-top: 15px; padding: 12px; background: rgba(0,0,0,0.05); border-radius: 8px;">
+                            <label class="checkbox-label" style="margin-bottom: 12px;">
+                                <input type="checkbox" id="backgroundRotationEnabled" onchange="handleBackgroundRotationToggle(this.checked)">
+                                <span class="checkbox-custom"></span>
+                                <span id="settings-bg-rotation-label" data-tr="settings-bg-rotation-label">Enable Rotation</span>
+                            </label>
+
+                            <div class="filter-control" style="margin: 0;">
+                                <label style="display: flex; justify-content: space-between;">
+                                    <span id="settings-bg-interval-label" data-tr="settings-bg-interval-label">Interval:</span>
+                                    <span id="rotationIntervalValue">5s</span>
+                                </label>
+                                <input type="range" id="backgroundRotationInterval" min="1" max="60" value="5" oninput="setBackgroundRotationInterval(this.value); updateRotationIntervalValue()" class="slider">
+                            </div>
+                        </div>
+
+                        <div class="settings-feedback" id="background-feedback"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" id="settings-pomodoro-label">Pomodoro</div>
+                <div class="settings-field">
+                    <label for="settingsPomodoroWork" id="settings-pomodoro-work-label">Work Duration (minutes)</label>
+                    <div class="settings-input-row">
+                        <input type="number" id="settingsPomodoroWork" min="1" max="180" value="25">
+                    </div>
+                </div>
+                <div class="settings-field">
+                    <label for="settingsPomodoroBreak" id="settings-pomodoro-break-label">Break Duration (minutes)</label>
+                    <div class="settings-input-row">
+                        <input type="number" id="settingsPomodoroBreak" min="1" max="120" value="5">
+                        <button class="settings-btn settings-btn-primary" onclick="savePomodoroSettings()" id="settings-pomodoro-save">Save</button>
+                    </div>
+                    <div class="settings-feedback" id="pomodoro-feedback"></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" id="settings-weather-label">Weather API Key</div>
+                <div class="settings-field">
+                    <div class="settings-input-row">
+                        <input type="password" id="settingsWeatherApiKey" placeholder="WeatherAPI.com API key" autocomplete="off">
+                        <button class="settings-btn settings-btn-primary" onclick="saveWeatherApiKey()" id="settings-weather-save">Save</button>
+                    </div>
+                    <div class="field-info" id="settings-weather-info">Get a free key at weatherapi.com.</div>
+                    <div class="settings-feedback" id="apikey-feedback"></div>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" id="settings-shortcuts-label">Shortcuts</div>
+                <button class="settings-btn settings-btn-secondary settings-btn-full" onclick="openAddShortcutFromSettings()" id="settings-add-shortcut">
+                    <i class="fas fa-plus"></i> Add New Shortcut
+                </button>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-section-title" id="settings-data-label">Data Management</div>
+                <div class="settings-data-grid">
+                    <button class="settings-btn settings-btn-success" onclick="exportData()" id="settings-export">
+                        <i class="fas fa-file-export"></i> Export (.yay)
+                    </button>
+                    <button class="settings-btn settings-btn-warning" onclick="importData()" id="settings-import">
+                        <i class="fas fa-file-import"></i> Import (.yay)
+                    </button>
+                    <div class="settings-feedback" id="export-feedback"></div>
+                    <div class="settings-feedback" id="import-feedback"></div>
+                </div>
+                <div class="field-info" id="settings-export-info">Weather API keys are stored locally and are not included in exports.</div>
+            </div>
+
+            <div class="settings-section">
+                <button class="settings-btn settings-btn-danger settings-btn-full" onclick="resetToDefaults()" id="settings-reset">
+                    <i class="fas fa-undo"></i> Reset to Defaults
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="context-menu" id="shortcutContextMenu">
+        <div class="context-menu-item" onclick="editShortcut()" data-tr="edit-shortcut">
+            <i class="fas fa-edit"></i>
+            <span>Edit Shortcut</span>
+        </div>
+        <div class="context-menu-item delete" onclick="deleteShortcut()" data-tr="delete-shortcut">
+            <i class="fas fa-trash"></i>
+            <span>Delete Shortcut</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="shortcutModalOverlay">
+        <div class="shortcut-modal" id="shortcutModal">
+            <div class="modal-header">
+                <h3 data-tr="edit-shortcut-title">Edit Shortcut</h3>
+                <button class="modal-close" onclick="closeShortcutModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label data-tr="shortcut-name">Name:</label>
+                    <input type="text" id="shortcutName" placeholder="Enter shortcut name">
+                </div>
+                <div class="input-group">
+                    <label data-tr="shortcut-url">URL:</label>
+                    <input type="url" id="shortcutUrl" placeholder="https://example.com">
+                </div>
+                <div class="input-group">
+                    <label data-tr="shortcut-icon">Icon:</label>
+                    <input type="text" id="shortcutIcon" placeholder="fas fa-globe">
+                    <small data-tr="icon-help">img:URL , img:file://C:\PATH veya Font Awesome sınıfından ikon ekleyebilirsiniz</small>
+                </div>
+                <div class="input-group">
+                    <label data-tr="shortcut-color">Color Class:</label>
+                    <select id="shortcutColor" onchange="toggleCustomColorPicker()">
+                        <option value="" data-tr="default-color">Default</option>
+                        <option value="gmail">🔴 Gmail Red</option>
+                        <option value="youtube">🔴 YouTube Red</option>
+                        <option value="github">⚫ GitHub Dark</option>
+                        <option value="linkedin">🔵 LinkedIn Blue</option>
+                        <option value="chatgpt">🟢 ChatGPT Green</option>
+                        <option value="translate">🔵 Google Blue</option>
+                        <option value="education">🔴 Education Red</option>
+                        <option value="custom">🎨 Custom Color</option>
+                    </select>
+                </div>
+                <div class="input-group color-picker-group" id="colorPickerGroup" style="display: none;">
+                    <label data-tr="custom-color">Custom Color:</label>
+                    <div class="color-picker-container">
+                        <div class="color-palette" id="colorPalette">
+                        </div>
+                        <div class="color-input-section">
+                            <input type="color" id="customColorInput" value="#3498db" onchange="updateColorFromInput()">
+                            <input type="text" id="hexColorInput" value="#3498db" placeholder="#000000" onchange="updateColorFromHex()" pattern="^#[0-9A-Fa-f]{6}$">
+                        </div>
+                    </div>
+                    <div class="color-preview" id="colorPreview">
+                        <i class="fas fa-palette"></i>
+                        <span>Preview</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeShortcutModal()" data-tr="cancel">Cancel</button>
+                <button class="btn-save" onclick="saveShortcut()" data-tr="save">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script src="js/themes.js"></script>
+    <script src="js/widgets.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/password.js"></script>
+    <script src="js/weather.js"></script>
+    <script src="js/clock.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/shortcuts.js"></script>
+    <script src="js/background.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

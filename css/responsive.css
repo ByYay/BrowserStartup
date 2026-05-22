@@ -1,0 +1,503 @@
+
+@media (max-width: 1024px) {
+    .container {
+        grid-template-columns: 1fr 480px;
+        gap: 30px;
+        max-width: 1200px;
+        padding: 0 20px;
+    }
+    
+    .title {
+        font-size: 2.5rem;
+    }
+    
+    .search-input {
+        padding: 10px 85px 10px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .file-upload-wrapper {
+        right: 45px;
+    }
+    
+    .file-upload-button {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .shortcuts {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+    
+    .shortcut {
+        padding: 12px;
+    }
+    
+    .shortcut i {
+        font-size: 1.8rem;
+    }
+
+    .shortcut img {
+        width: 1.8rem;
+        height: 1.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .fullscreen-toggle {
+        top: 12px;
+        right: 12px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+        max-width: 100%;
+        padding: 0 15px;
+        margin-left: 0 !important;
+    }
+    
+    .main-content {
+        padding-top: 30px !important;
+    }
+    
+    .widget-container {
+        position: static;
+        order: -1;
+        min-height: auto;
+        height: auto;
+        top: 0;
+        left: 0;
+        padding: 15px;
+        margin: 0 auto;
+        max-width: 100%;
+    }
+    
+    .title {
+        font-size: 2rem;
+        text-align: center;
+    }
+    
+    .greeting {
+        font-size: 1.1rem;
+        text-align: center;
+    }
+    
+    .search-section {
+        margin: 20px 0;
+    }
+    
+    .search-container {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    .search-input {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+    
+    .shortcuts {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        max-width: 100%;
+    }
+    
+    .shortcut {
+        padding: 12px 8px;
+    }
+    
+    .shortcut i {
+        font-size: 1.6rem;
+    }
+
+    .shortcut img {
+        width: 1.6rem;
+        height: 1.6rem;
+    }
+    
+    .shortcut span {
+        font-size: 0.7rem;
+    }
+
+    .widget-toggle {
+        padding: 3px;
+        border-radius: 100px;
+        margin-bottom: 16px;
+    }
+
+    .widget-liquid-indicator {
+        top: 6px;
+        left: 6px;
+        width: calc(25% - 8px);
+        height: calc(100% - 12px);
+        border-radius: 100px;
+    }
+
+    .widget-liquid-indicator.calculator-active {
+        transform: translateX(calc(100% + 2px));
+    }
+
+    .widget-liquid-indicator.password-active {
+        transform: translateX(calc(200% + 4px));
+    }
+
+    .widget-liquid-indicator.weather-active {
+        transform: translateX(calc(300% + 6px));
+    }
+
+    .widget-toggle-btn {
+        padding: 8px 12px;
+        font-size: 0.7rem;
+        border-radius: 100px;
+        gap: 5px;
+    }
+
+    .widget-toggle-btn span {
+        display: none;
+    }
+
+    .widget-toggle-btn i {
+        font-size: 1.1rem;
+    }
+    
+    .calendar-widget {
+        padding: 15px;
+    }
+    
+    .week-day {
+        width: 100%;
+        max-width: 32px;
+        height: 32px;
+        font-size: 0.75rem;
+    }
+    
+    .weekday-label {
+        font-size: 0.7rem;
+    }
+    
+    .calendar-month {
+        font-size: 0.9rem;
+    }
+
+    .calculator {
+        padding: 15px;
+    }
+
+    .calculator-display {
+        padding: 0 0 16px 0;
+        margin-bottom: 16px;
+    }
+
+    .display-text {
+        font-size: 2rem;
+        min-height: 40px;
+    }
+
+    .calc-btn {
+        height: 48px;
+        font-size: 1.1rem;
+    }
+
+    .calculator-buttons {
+        gap: 8px;
+    }
+
+    .weather-container {
+        padding: 15px;
+    }
+
+    .weather-main {
+        gap: 15px;
+    }
+
+    .current-temp {
+        font-size: 3rem;
+    }
+
+    .weather-icon {
+        font-size: 3rem;
+    }
+
+    .forecast-grid {
+        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+        gap: 8px;
+    }
+
+    .forecast-item {
+        padding: 10px 8px;
+    }
+
+    .forecast-icon {
+        font-size: 1.2rem;
+    }
+
+    .weather-detail-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .weather-detail-item {
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 0 10px;
+    }
+    
+    .title {
+        font-size: 1.8rem;
+    }
+    
+    .greeting {
+        font-size: 1rem;
+    }
+    
+    .shortcuts {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .shortcut {
+        padding: 10px 6px;
+    }
+    
+    .shortcut i {
+        font-size: 1.4rem;
+    }
+
+    .shortcut img {
+        width: 1.4rem;
+        height: 1.4rem;
+    }
+    
+    .shortcut span {
+        font-size: 0.65rem;
+    }
+    
+    .search-input {
+        padding: 10px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .widget-toggle {
+        padding: 2px;
+        border-radius: 100px;
+        margin-bottom: 12px;
+    }
+
+    .widget-liquid-indicator {
+        top: 4px;
+        left: 4px;
+        width: calc(25% - 4px);
+        height: calc(100% - 8px);
+        border-radius: 100px;
+    }
+
+    .widget-liquid-indicator.calculator-active {
+        transform: translateX(calc(100% + 2px));
+    }
+
+    .widget-liquid-indicator.password-active {
+        transform: translateX(calc(200% + 4px));
+    }
+
+    .widget-liquid-indicator.weather-active {
+        transform: translateX(calc(300% + 6px));
+    }
+
+    .widget-toggle-btn {
+        padding: 6px 8px;
+        border-radius: 100px;
+        gap: 3px;
+    }
+    
+    .calendar-widget {
+        padding: 12px;
+    }
+    
+    .week-day {
+        width: 100%;
+        max-width: 28px;
+        height: 28px;
+        font-size: 0.7rem;
+    }
+    
+    .weekday-label {
+        font-size: 0.65rem;
+    }
+    
+    .calendar-month {
+        font-size: 0.85rem;
+    }
+
+    .calculator {
+        padding: 12px;
+    }
+
+    .calculator-display {
+        padding: 0 0 12px 0;
+        margin-bottom: 12px;
+    }
+
+    .display-text {
+        font-size: 1.6rem;
+        min-height: 32px;
+    }
+
+    .calc-btn {
+        height: 40px;
+        font-size: 1rem;
+    }
+
+    .calculator-buttons {
+        gap: 6px;
+    }
+
+    .weather-container {
+        padding: 12px;
+    }
+
+    .current-temp {
+        font-size: 2.5rem;
+    }
+
+    .weather-icon {
+        font-size: 2.5rem;
+    }
+
+    .forecast-grid {
+        grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+        gap: 6px;
+    }
+
+    .forecast-item {
+        padding: 8px 6px;
+    }
+
+    .forecast-icon {
+        font-size: 1rem;
+    }
+
+    .weather-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .weather-detail-item {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 320px) {
+    .container {
+        padding: 0 5px;
+    }
+    
+    .title {
+        font-size: 1.5rem;
+    }
+    
+    .greeting {
+        font-size: 0.9rem;
+    }
+    
+    .shortcuts {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .shortcut {
+        padding: 8px 4px;
+    }
+    
+    .shortcut i {
+        font-size: 1.2rem;
+    }
+
+    .shortcut img {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+    
+    .shortcut span {
+        font-size: 0.6rem;
+    }
+    
+    .search-input {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+    
+    .search-button {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+    
+    .widget-container {
+        padding: 10px;
+    }
+    
+    .widget-toggle-btn {
+        padding: 4px 6px;
+        font-size: 0.6rem;
+    }
+    
+    .calendar-widget {
+        padding: 8px;
+    }
+    
+    .week-day {
+        max-width: 24px;
+        height: 24px;
+        font-size: 0.6rem;
+    }
+    
+    .weekday-label {
+        font-size: 0.55rem;
+    }
+
+    .calculator {
+        padding: 8px;
+    }
+
+    .display-text {
+        font-size: 1.4rem;
+        min-height: 28px;
+    }
+
+    .calc-btn {
+        height: 36px;
+        font-size: 0.9rem;
+    }
+
+    .weather-container {
+        padding: 8px;
+    }
+
+    .current-temp {
+        font-size: 2rem;
+    }
+
+    .weather-icon {
+        font-size: 2rem;
+    }
+
+    .forecast-grid {
+        grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+        gap: 4px;
+    }
+
+    .forecast-item {
+        padding: 6px 4px;
+    }
+
+    .forecast-icon {
+        font-size: 0.9rem;
+    }
+}

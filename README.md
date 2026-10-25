@@ -14,7 +14,7 @@ Shortcuts, English–Turkish vocabulary cards, a calendar, a password generator,
 ![Languages](https://img.shields.io/badge/UI-English%20%7C%20T%C3%BCrk%C3%A7e-8A2BE2)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-[Features](#features) · [Screenshots](#screenshots) · [Installation](#installation) · [Usage](#usage) · [Privacy](#privacy-and-external-connections)
+[Features](#features) · [Tour](#feature-tour) · [Installation](#installation) · [Usage](#usage) · [Privacy](#privacy-and-external-connections) · [FAQ](#troubleshooting)
 
 ![Browser Startup in the light theme](screenshots/hero.png)
 
@@ -22,56 +22,146 @@ Shortcuts, English–Turkish vocabulary cards, a calendar, a password generator,
 
 ## Features
 
-- 🔗 **Shortcuts:** add, edit, and delete links with a right-click. Pick colors and use Font Awesome icons, image URLs, or your own PNG, JPEG, or WebP files. Uploaded icons are resized to 128 px and stored locally.
-- 🔍 **Web and AI search:** search Google, or toggle AI mode to send your query to ChatGPT or Claude. AI mode opens the provider's website; no model runs inside the dashboard.
-- 📚 **Vocabulary cards:** save English words with Turkish meanings and practice them as flip cards in a shuffled order that never shows the same word twice in a row. Meanings come from the browser's built-in Translator or can be typed by hand.
-- 🧩 **Five widgets:** calendar, vocabulary cards, password generator, weather, and Pomodoro timer, switched from a single tab bar.
-- 🎨 **Themes and backgrounds:** Light, Dark, Midnight, or Auto (follows sunrise and sunset). Upload your own backgrounds, adjust blur, brightness, and contrast, and rotate between them.
-- 📐 **Fits any window:** landscape windows keep the two-column layout and scale it to fit; portrait windows stack the panels.
-- 💾 **Backup and restore:** export everything (settings, shortcuts, vocabulary, backgrounds) to a single `.yay` file and import it in another browser.
+- 🔍 **Web and AI search:** search Google, or switch to AI mode to send your question to ChatGPT or Claude.
+- 🔗 **Shortcuts:** add, edit, and delete links. Use Font Awesome icons, image URLs, or your own PNG, JPEG, or WebP files.
+- 📚 **Vocabulary cards:** collect English words with Turkish meanings and practice them as flip cards in a shuffled order.
+- 📅 **Calendar:** the current month with week numbers, today, and weekends highlighted.
+- 🔐 **Password generator:** strong 4–50 character passwords from the Web Crypto API.
+- 🌤️ **Weather:** current conditions and a forecast for your approximate location, with three data sources.
+- ⏳ **Pomodoro timer:** configurable work and break sessions with a session counter.
+- 🎨 **Four themes:** Light, Dark, Midnight, and Auto (switches with sunrise and sunset).
+- 🖼️ **Custom backgrounds:** upload images, adjust blur, brightness, and contrast, and rotate between them.
+- 🌐 **Two languages:** the whole interface is available in English and Turkish.
+- 📐 **Fits any window:** the layout scales with the window and stacks vertically in portrait windows.
+- 💾 **Backup and restore:** export everything to a single `.yay` file and import it in another browser.
 
-### Widgets
+No account, no backend, no analytics, and no build step: just HTML, CSS, and JavaScript.
 
-| Widget | What it does |
+## Feature tour
+
+### 🔍 Search: Google or AI
+
+Type in the search bar and press **Enter**. Click the AI logo on the right side of the bar to switch to AI mode: the bar turns orange, the button changes to **Send**, and your question opens in ChatGPT or Claude (choose which one in **Settings → Search AI**).
+
+AI mode only opens the provider's website with your question filled in; no AI model runs inside the dashboard and no API key is needed.
+
+![AI search mode with Claude selected and a question typed](screenshots/ai-search.png)
+
+### 🔗 Shortcuts
+
+Ten popular sites are included by default. Add your own from **Settings → Shortcuts → Add New Shortcut**, or right-click any shortcut to edit or delete it.
+
+| Right-click menu | Shortcut editor |
 | --- | --- |
-| **Calendar** | Current month with week numbers, today, and weekends highlighted. |
-| **Words** | Flip cards: click once to reveal the meaning, click again to fade to the next word. Add, edit, and delete words in the management view. |
-| **Password** | 4–50 character passwords from Web Crypto, with character-set options, similar-character exclusion, a strength meter, and one-click copy. |
-| **Weather** | Current conditions and a forecast for your IP-based location. Uses an optional WeatherAPI.com key, with Open-Meteo and wttr.in as fallbacks. |
-| **Pomodoro** | Configurable work and break durations, start/pause and skip, and a session counter. |
+| ![Right-click menu on a shortcut with Edit and Delete options](screenshots/shortcut-menu.png) | ![Add New Shortcut dialog with name, URL, icon, and color fields](screenshots/shortcut-editor.png) |
 
-## Screenshots
+The **Icon** field accepts three kinds of values, and a live preview shows the result:
+
+| Icon type | Example |
+| --- | --- |
+| Font Awesome class | `fas fa-star`, `fab fa-github` |
+| Image URL | `img:https://example.com/logo.png` |
+| Image from your computer | Click **Choose file** and pick a PNG, JPEG, or WebP file |
+
+Uploaded images are resized to at most 128 × 128 px and stored with your shortcuts, so they keep working offline and are included in backups.
+
+### 📚 Vocabulary cards
+
+A personal English–Turkish word notebook that turns your words into practice cards.
+
+| Card | Meaning revealed |
+| --- | --- |
+| ![Vocabulary card showing an English word](screenshots/vocabulary.png) | ![Flipped vocabulary card showing the Turkish meaning](screenshots/vocabulary-meaning.png) |
+
+- **Practice:** click a card to flip it and see the meaning; click again and it fades to the next word.
+- **Smart shuffle:** every word appears once per round in random order, and the same word never shows twice in a row, even across rounds. The counter under the card shows your place in the round.
+- **Automatic translation:** type an English word and the Turkish meaning fills in by itself, using the browser's built-in [Translator API](https://developer.chrome.com/docs/ai/translator-api). Translation runs on your device. You can always type or correct the meaning yourself.
+- **Manage your list:** click **Add / Edit** to add words, click a word in the list to edit it, or delete it with the trash button. Duplicate words are detected regardless of letter case.
+
+![Vocabulary management view with the add form and word list](screenshots/vocabulary-manage.png)
+
+### 📅 Calendar
+
+Shows the current month starting on Monday, with today highlighted, weekends in red, and the ISO week number below.
+
+![Calendar widget showing the current month](screenshots/calendar.png)
+
+### 🔐 Password generator
+
+Generates passwords with `crypto.getRandomValues`, never `Math.random`.
+
+- Length from 4 to 50 characters
+- Numbers, uppercase, lowercase, and special characters can each be turned on or off
+- Optionally excludes look-alike characters such as `0`, `O`, `1`, `l`, and `I`
+- Strength meter and one-click copy
+- **Ctrl+G** creates a new password while the widget is open
+
+![Password generator with options and strength meter](screenshots/password.png)
+
+### 🌤️ Weather
+
+Shows temperature, feels-like temperature, conditions, humidity, wind, pressure, visibility, and a forecast for your approximate location (found from your IP address).
+
+Without any setup, it uses [Open-Meteo](https://open-meteo.com/) and falls back to [wttr.in](https://wttr.in/). For more detail, get a free key from [WeatherAPI.com](https://www.weatherapi.com/) and paste it into **Settings → Weather API Key**. Results are cached to avoid repeated requests.
+
+![Weather widget with sample data for a demo city](screenshots/weather.png)
+
+### ⏳ Pomodoro timer
+
+Work and break sessions with start, pause/resume, and skip controls, a progress bar, and a completed-session counter. The defaults are 25 and 5 minutes; change them in **Settings → Pomodoro** (work 1–180, break 1–120 minutes).
+
+![Pomodoro timer](screenshots/pomodoro.png)
+
+### 🎨 Themes
+
+Pick **Light**, **Dark**, or **Midnight**, or choose **Auto** to switch between light and dark at your local sunrise and sunset.
 
 | Dark | Midnight |
 | --- | --- |
 | ![Dark theme](screenshots/dark.png) | ![Midnight theme](screenshots/midnight.png) |
 
-| Vocabulary cards | Password generator |
-| --- | --- |
-| ![Vocabulary cards with example English and Turkish words](screenshots/vocabulary.png) | ![Password generator showing a disposable demonstration password](screenshots/password.png) |
+### 🖼️ Custom backgrounds
 
-| Weather (sample data) | Pomodoro |
-| --- | --- |
-| ![Weather widget with fictional Demo City and sample conditions](screenshots/weather.png) | ![Pomodoro focus timer](screenshots/pomodoro.png) |
+In **Settings → Background**, choose **Upload Images** to use your own photos. You can upload several, adjust blur (0–60 px), brightness, and contrast (0–200%), and rotate through them every 1–60 minutes. Images are stored in the browser's IndexedDB.
 
-![Settings panel with language, AI provider, and theme options](screenshots/settings.png)
+![Dashboard with an alpine lake background and custom shortcuts](screenshots/custom-dashboard.png)
 
 <details>
-<summary><b>Custom backgrounds and shortcuts</b></summary>
+<summary><b>More background examples</b></summary>
 
 <br>
 
-![Alpine lake background with public example shortcuts and Claude search](screenshots/custom-dashboard.png)
+![Dashboard with a coastal dusk background](screenshots/custom-coastal.png)
 
-![Coastal dusk background with the same example shortcut collection](screenshots/custom-coastal.png)
+![Background settings with two uploaded images and filter sliders](screenshots/custom-background.png)
 
-![Background settings with two landscape images and image filters](screenshots/custom-background.png)
-
-Want to try them? Download [Alpine lake](screenshots/backgrounds/alpine-lake.webp) or [Coastal dusk](screenshots/backgrounds/coastal-dusk.webp) and choose **Settings → Background → Upload Images**. Both images are AI-generated; their [prompts](screenshots/backgrounds/prompts.json) are included.
+Want to try them? Download [Alpine lake](screenshots/backgrounds/alpine-lake.webp) or [Coastal dusk](screenshots/backgrounds/coastal-dusk.webp) and upload them in **Settings → Background → Upload Images**. Both images are AI-generated; their [prompts](screenshots/backgrounds/prompts.json) are included.
 
 </details>
 
-> Screenshots were taken in a fresh browser profile with a demo name, public example shortcuts, and example words. The weather screenshot uses sample data.
+### 🌐 English and Türkçe
+
+Switch the entire interface, including dates, greetings, and messages, between English and Turkish in **Settings → Language / Dil**.
+
+![The dashboard in Turkish with the light theme](screenshots/turkish.png)
+
+### 📐 Fits any window
+
+The two-column layout scales down smoothly when the window gets smaller, so nothing overlaps or gets cut off. When the window is taller than it is wide (for example on a vertical monitor or a half-screen window), the panels stack on top of each other instead of shrinking.
+
+<img src="screenshots/portrait.png" alt="Stacked layout in a portrait window" width="410">
+
+### ⚙️ Settings and backup
+
+Open **Settings** from the bottom-right corner to change your name, language, AI provider, theme, background, Pomodoro durations, and weather API key.
+
+| Settings | Data management |
+| --- | --- |
+| ![Settings panel with name, language, AI provider, and theme options](screenshots/settings.png) | ![Settings panel scrolled to shortcuts, export, import, and reset](screenshots/settings-data.png) |
+
+- **Export (.yay)** saves your settings, shortcuts, vocabulary, and backgrounds to one file.
+- **Import (.yay)** restores them, for example in another browser or on another computer.
+- **Reset to Defaults** restores the default shortcuts, theme, and settings and clears your vocabulary (after a confirmation).
 
 ## Installation
 
@@ -86,42 +176,86 @@ Want to try them? Download [Alpine lake](screenshots/backgrounds/alpine-lake.web
 4. Select the `BrowserStartup` folder (the one containing `manifest.json`).
 5. Open a new tab. 🎉
 
-There is no build step and nothing to install. Other Chromium-based browsers should work too, but automatic translation needs a browser with the built-in Translator API (recent Chrome).
+There is nothing to install or build. To update, pull the latest changes (or download the ZIP again) and click the reload button on the extension card.
+
+> [!NOTE]
+> Chrome may ask whether to keep the new-tab page changed by the extension. Choose **Keep it**.
+
+### Enabling automatic translation
+
+Automatic word translation uses Chrome's built-in Translator API, available in **desktop Chrome 138 or newer**. The first time you translate, Chrome downloads the English–Turkish language pack (the status line shows the progress); after that, translation works offline. In browsers without the API, simply type meanings yourself.
 
 ## Usage
 
 | Task | How |
 | --- | --- |
-| Search | Type and press **Enter** (**Shift+Enter** for a new line). Click the AI logo to toggle AI mode. |
+| Search | Type and press **Enter**. **Shift+Enter** adds a new line. |
+| Toggle AI mode | Click the AI logo in the search bar. |
 | Choose the AI provider | **Settings → Search AI** |
-| Add a shortcut | **Settings → Shortcuts**, or edit the defaults with a right-click. |
-| Use your own icon | In the shortcut editor, click **Choose file**, or enter a Font Awesome class (`fas fa-star`) or `img:https://…` URL. |
-| Add words | Open the **Words** tab and click the pen icon. Type a word; the meaning fills in automatically when translation is available. |
-| Practice | Click a card to see the meaning, click again for the next word. |
+| Add a shortcut | **Settings → Shortcuts → Add New Shortcut** |
+| Edit or delete a shortcut | Right-click it. |
+| Use your own icon | In the shortcut editor, click **Choose file**. |
+| Add a word | **Words** tab → **Add / Edit**, type the word, press **Enter**. |
+| Edit a word | Click it in the word list; press **Escape** to cancel. |
+| Practice words | Click the card to flip it, click again for the next word. |
 | Switch widgets | Click a tab, or use **←** / **→**, **Home**, and **End** on the tab bar. |
-| Change the look | **Settings** (bottom-right corner): greeting, language, theme, backgrounds, filters. |
-| Back up | **Settings → Data Management → Export / Import** |
+| New password | **Ctrl+G** while the Password widget is open. |
+| Fullscreen | The button in the top-right corner. |
+| Close a dialog or settings | **Escape** |
+| Back up / restore | **Settings → Data Management** |
 
 ## Privacy and external connections
 
-Browser Startup has no backend, account, or analytics. Your preferences, shortcuts, and vocabulary stay in the browser's `localStorage`; backgrounds are stored in IndexedDB.
+Browser Startup has no backend, account, or analytics. Your preferences, shortcuts, and vocabulary stay in the browser's `localStorage`; backgrounds are stored in IndexedDB. Nothing is uploaded anywhere.
 
-Some features still need the network:
+Some features do need the network:
 
 | Service | Used for |
 | --- | --- |
 | Google Fonts, cdnjs (Font Awesome) | Fonts and icons, loaded when the page opens. |
-| Shortcut icon hosts | Default Google/Gmail icons and any image URLs you add. Uploaded icons stay local. |
-| ipapi.co / ipwho.is | Approximate location for weather and Auto theme. |
-| sunrise-sunset.org | Sunrise and sunset times for Auto theme. |
-| WeatherAPI.com, Open-Meteo, wttr.in | Weather for your coordinates. Your API key, if set, goes only to WeatherAPI.com. |
-| Google, ChatGPT, Claude | Your search text, when you submit a search. |
-| Browser Translator | May download a language pack once. Translation itself runs on your device. |
+| Shortcut icon hosts | Default Google and Gmail icons, and any image URLs you add. Uploaded icons stay local. |
+| ipapi.co / ipwho.is | Approximate location for weather and the Auto theme. |
+| sunrise-sunset.org | Sunrise and sunset times for the Auto theme. |
+| WeatherAPI.com, Open-Meteo, wttr.in | Weather for your location. Your API key, if set, goes only to WeatherAPI.com. |
+| Google, ChatGPT, Claude | Your search text, only when you submit a search. |
+| Browser Translator | May download a language pack once; translation itself runs on your device. |
 
 > [!WARNING]
-> **Backups are not encrypted.** A `.yay` file is Base64-encoded JSON that contains your weather API key, name, shortcuts, uploaded icons, vocabulary, and backgrounds. Keep it private and do not commit it; `.gitignore` already excludes `*.yay`.
+> **Backups are not encrypted.** A `.yay` file is Base64-encoded JSON that contains your weather API key, name, shortcuts, uploaded icons, vocabulary, and backgrounds. Keep it private and never commit it; this repository's `.gitignore` already excludes `*.yay`.
 
-## Project structure
+## Troubleshooting
+
+<details>
+<summary><b>Automatic translation doesn't work</b></summary>
+
+The Translator API is only in desktop Chrome 138 and newer; Edge and other browsers don't have it yet. On Chrome, make sure you have enough free disk space for the language pack and try the translate button next to the meaning field. You can always type the meaning manually.
+
+</details>
+
+<details>
+<summary><b>Weather says it can't find my location</b></summary>
+
+Location comes from your IP address. VPNs, ad blockers, or privacy extensions that block ipapi.co and ipwho.is will prevent it. Allow those domains or disable the blocker for the new-tab page.
+
+</details>
+
+<details>
+<summary><b>My settings disappeared after reinstalling</b></summary>
+
+Data is stored per extension. Removing the extension (or loading it from a different folder) creates a new, empty storage. Export a `.yay` backup before reinstalling and import it afterwards.
+
+</details>
+
+<details>
+<summary><b>A shortcut icon doesn't load</b></summary>
+
+Some sites block their images from being shown on other pages. Download the logo and use **Choose file** instead; uploaded icons are stored locally and always load.
+
+</details>
+
+## How it works
+
+The page is a plain Manifest V3 extension that replaces the new-tab page (`chrome_url_overrides.newtab`). It follows the extension content security policy: there are no inline scripts or event handlers. Instead, buttons carry `data-action` attributes, and `app.js` routes each click to the matching function.
 
 ```text
 BrowserStartup/
@@ -148,10 +282,26 @@ BrowserStartup/
 └── manifest.json
 ```
 
-The extension page follows Manifest V3's content security policy: no inline scripts or handlers. Buttons use `data-action` attributes that `app.js` routes to the matching function.
+### Development
+
+Edit the files and reload the extension from `chrome://extensions` (or simply open a new tab for HTML/CSS changes). You can also preview the page without installing it by serving the folder locally:
+
+```bash
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000`. Note that a local preview and the installed extension keep separate data.
+
+To add a new interface text, add the key to both the `tr` and `en` objects in `js/translations.js` and mark the element with `data-tr="your-key"`.
+
+## Contributing
+
+Issues and pull requests are welcome. Please keep the project dependency-free and test your change both as an installed extension and in both languages.
 
 ## License
 
 [MIT](LICENSE) © 2026 ByYay
 
 Third-party names, logos, fonts, and icons belong to their respective owners and remain subject to their own terms.
+
+<sub>Screenshots were taken in a fresh browser profile with a demo name, the default shortcuts, and example words. The weather screenshot uses sample data.</sub>

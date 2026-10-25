@@ -1,0 +1,621 @@
+/* Vocabulary Widget Styles (görsel dil clock.css ile aynı: cam paneller, yumuşak köşeler) */
+.vocab-widget {
+    display: none;
+    width: 100%;
+    min-height: 520px;
+    height: 520px;
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    text-align: left;
+}
+
+.vocab-widget.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.vocab-widget [hidden] {
+    display: none !important;
+}
+
+/* ---------- Başlık ---------- */
+.vocab-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.vocab-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.vocab-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.vocab-count-pill {
+    padding: 5px 11px;
+    border-radius: 999px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    background: rgba(52, 152, 219, 0.14);
+    color: #2c3e50;
+    border: 1px solid rgba(52, 152, 219, 0.28);
+}
+
+.vocab-chip-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.82);
+    color: #2c3e50;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.vocab-chip-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* ---------- Görünüm geçişi (Kartlar ↔ Ekle / Düzenle) ----------
+   Süre js/vocab.js VOCAB_FADE_DURATION ile aynı. Animasyon adı diğer
+   dosyalardaki fadeIn ile çakışmasın diye ayrı */
+.vocab-cards-view,
+.vocab-manage-view {
+    transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.vocab-view-leaving {
+    opacity: 0;
+    transform: scale(0.98);
+}
+
+.vocab-view-entering {
+    animation: vocabViewEnter 0.28s ease;
+}
+
+@keyframes vocabViewEnter {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ---------- Kart görünümü ---------- */
+.vocab-cards-view,
+.vocab-card-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.vocab-card-area {
+    gap: 18px;
+}
+
+.vocab-card {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    perspective: 1200px;
+    font: inherit;
+    color: inherit;
+}
+
+/* themes.css tüm öğelere backface-visibility: hidden veriyor; dönen kapsayıcıda
+   açık olmazsa kart 180° döndüğünde tamamen kaybolur */
+.vocab-card-inner {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: visible;
+    backface-visibility: visible;
+    transform-style: preserve-3d;
+    transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+}
+
+.vocab-card.flipped .vocab-card-inner {
+    transform: rotateY(180deg);
+}
+
+.vocab-card-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 28px 26px;
+    text-align: center;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vocab-card:hover .vocab-card-face {
+    border-color: rgba(52, 152, 219, 0.45);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+.vocab-card-back {
+    transform: rotateY(180deg);
+}
+
+/* Fareyi izleyen parlama (kısayollardaki spotlight ile aynı; js/vocab.js değişkenleri günceller).
+   Arka yüz iki kez döndüğü için koordinatlar iki yüzde de aynı kalır */
+.vocab-card {
+    --sx: 50%;
+    --sy: 50%;
+    --so: 0;
+    --sc: rgba(99, 155, 255, 0.30);
+}
+
+.vocab-card-face::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+        circle 180px at var(--sx) var(--sy),
+        var(--sc) 0%,
+        transparent 70%
+    );
+    opacity: var(--so);
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.vocab-card-face > :not(.vocab-card-lang) {
+    position: relative;
+    z-index: 1;
+}
+
+.vocab-card-face > .vocab-card-lang {
+    z-index: 1;
+}
+
+.vocab-card-lang {
+    position: absolute;
+    top: 16px;
+    left: 18px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #6b7280;
+}
+
+.vocab-card-word,
+.vocab-card-meaning {
+    max-width: 100%;
+    font-weight: 300;
+    line-height: 1.15;
+    overflow-wrap: anywhere;
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.vocab-card-word {
+    font-size: 3.2rem;
+    letter-spacing: 0.5px;
+}
+
+.vocab-card-meaning {
+    font-size: 2.3rem;
+}
+
+.vocab-card-meaning.missing {
+    font-size: 1.2rem;
+    font-weight: 500;
+    background: none;
+    -webkit-text-fill-color: #6b7280;
+}
+
+.vocab-card-hint {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.vocab-card-back-word {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6b7280;
+}
+
+/* Sıradaki kelimeye geçiş: kart solar, görünmezken içerik değişir, sonra belirir.
+   Süre js/vocab.js VOCAB_FADE_DURATION ile aynı */
+.vocab-card {
+    transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.vocab-card.fading {
+    opacity: 0;
+    transform: scale(0.98);
+}
+
+.vocab-card.instant .vocab-card-inner {
+    transition: none;
+}
+
+.vocab-progress {
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #6b7280;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Butonlar (pomodoro butonlarıyla aynı) ---------- */
+.vocab-btn {
+    border: none;
+    border-radius: 11px;
+    padding: 10px 16px;
+    font-size: 0.86rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+}
+
+.vocab-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.vocab-btn:not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+.vocab-btn.primary {
+    color: #fff;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.vocab-btn.secondary {
+    color: #2c3e50;
+    background: rgba(255, 255, 255, 0.82);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.vocab-icon-btn {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.82);
+    color: #2c3e50;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.vocab-icon-btn:hover {
+    transform: translateY(-1px);
+    color: #3498db;
+}
+
+.vocab-icon-btn.danger:hover {
+    color: #e74c3c;
+}
+
+/* ---------- Boş durum ---------- */
+.vocab-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px dashed rgba(52, 152, 219, 0.4);
+    color: #4b5563;
+    text-align: center;
+}
+
+.vocab-empty i {
+    font-size: 2.4rem;
+    color: #3498db;
+    opacity: 0.8;
+}
+
+/* ---------- Ekleme / düzenleme görünümü ---------- */
+.vocab-manage-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+}
+
+.vocab-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 18px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.vocab-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.vocab-field label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b7280;
+}
+
+.vocab-input-row {
+    display: flex;
+    gap: 8px;
+}
+
+.vocab-input-row input {
+    flex: 1;
+}
+
+.vocab-field input {
+    min-width: 0;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 11px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.82);
+    color: #2c3e50;
+    font: inherit;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.vocab-field input:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.18);
+}
+
+.vocab-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vocab-status {
+    flex: 1;
+    min-height: 1.2em;
+    font-size: 0.8rem;
+    color: #4b5563;
+}
+
+/* Büyümez, sığmazsa küçülüp kayar; boş liste mesajı formun hemen altında kalır */
+.vocab-list {
+    flex: 0 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.vocab-list-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vocab-list-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.vocab-list-text:hover,
+.vocab-list-item.editing .vocab-list-text {
+    border-color: rgba(52, 152, 219, 0.45);
+}
+
+.vocab-list-word {
+    font-weight: 600;
+    color: #2c3e50;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.vocab-list-meaning {
+    font-size: 0.88rem;
+    color: #6b7280;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
+}
+
+.vocab-list-item .vocab-icon-btn {
+    width: 36px;
+    height: 36px;
+}
+
+.vocab-list-empty {
+    font-size: 0.85rem;
+    color: #6b7280;
+    text-align: center;
+    padding: 12px 0;
+}
+
+/* ---------- Koyu ve gece temaları ---------- */
+.dark-mode .vocab-title,
+.midnight-mode .vocab-title,
+.dark-mode .vocab-list-word,
+.midnight-mode .vocab-list-word,
+.dark-mode .vocab-btn.secondary,
+.midnight-mode .vocab-btn.secondary,
+.dark-mode .vocab-chip-btn,
+.midnight-mode .vocab-chip-btn,
+.dark-mode .vocab-icon-btn,
+.midnight-mode .vocab-icon-btn,
+.dark-mode .vocab-field input,
+.midnight-mode .vocab-field input {
+    color: #e8eaed;
+}
+
+.dark-mode .vocab-count-pill,
+.midnight-mode .vocab-count-pill {
+    background: rgba(74, 158, 255, 0.15);
+    border-color: rgba(74, 158, 255, 0.35);
+    color: #e8eaed;
+}
+
+.dark-mode .vocab-card-face,
+.midnight-mode .vocab-card-face,
+.dark-mode .vocab-form,
+.midnight-mode .vocab-form,
+.dark-mode .vocab-empty,
+.midnight-mode .vocab-empty {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .vocab-empty,
+.midnight-mode .vocab-empty {
+    border-color: rgba(74, 158, 255, 0.3);
+}
+
+.dark-mode .vocab-card:hover .vocab-card-face,
+.midnight-mode .vocab-card:hover .vocab-card-face {
+    border-color: rgba(74, 158, 255, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.dark-mode .vocab-card-word,
+.dark-mode .vocab-card-meaning,
+.midnight-mode .vocab-card-word,
+.midnight-mode .vocab-card-meaning {
+    background-image: linear-gradient(135deg, #f0f0f0, #4a9eff);
+}
+
+.dark-mode .vocab-card-meaning.missing,
+.midnight-mode .vocab-card-meaning.missing {
+    background: none;
+}
+
+.dark-mode .vocab-btn.secondary,
+.midnight-mode .vocab-btn.secondary,
+.dark-mode .vocab-chip-btn,
+.midnight-mode .vocab-chip-btn,
+.dark-mode .vocab-icon-btn,
+.midnight-mode .vocab-icon-btn,
+.dark-mode .vocab-field input,
+.midnight-mode .vocab-field input {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark-mode .vocab-field input:focus,
+.midnight-mode .vocab-field input:focus {
+    border-color: #4a9eff;
+    box-shadow: 0 0 0 3px rgba(74, 158, 255, 0.2);
+}
+
+.dark-mode .vocab-list,
+.midnight-mode .vocab-list {
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.dark-mode .vocab-list-text,
+.midnight-mode .vocab-list-text {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark-mode .vocab-list-text:hover,
+.midnight-mode .vocab-list-text:hover,
+.dark-mode .vocab-list-item.editing .vocab-list-text,
+.midnight-mode .vocab-list-item.editing .vocab-list-text {
+    border-color: rgba(74, 158, 255, 0.4);
+}
+
+.dark-mode .vocab-card-lang,
+.midnight-mode .vocab-card-lang,
+.dark-mode .vocab-card-hint,
+.midnight-mode .vocab-card-hint,
+.dark-mode .vocab-card-back-word,
+.midnight-mode .vocab-card-back-word,
+.dark-mode .vocab-progress,
+.midnight-mode .vocab-progress,
+.dark-mode .vocab-field label,
+.midnight-mode .vocab-field label,
+.dark-mode .vocab-status,
+.midnight-mode .vocab-status,
+.dark-mode .vocab-list-meaning,
+.midnight-mode .vocab-list-meaning,
+.dark-mode .vocab-list-empty,
+.midnight-mode .vocab-list-empty,
+.dark-mode .vocab-empty,
+.midnight-mode .vocab-empty {
+    color: #9aa0a6;
+}
+
+.dark-mode .vocab-card-meaning.missing,
+.midnight-mode .vocab-card-meaning.missing {
+    -webkit-text-fill-color: #9aa0a6;
+}

@@ -1,23 +1,22 @@
-let currentTheme = localStorage.getItem('theme') || 'auto';
-const themes = ['auto', 'light', 'dark', 'midnight'];
-const themeNames = {
-    auto: 'Auto',
-    light: 'Light',
-    dark: 'Dark', 
-    midnight: 'Midnight'
-};
-const themeIcons = {
-    auto: 'fas fa-adjust',
-    light: 'fas fa-sun',
-    dark: 'fas fa-moon',
-    midnight: 'fas fa-star'
-};
+const THEMES = ['auto', 'light', 'dark', 'midnight'];
+
+let currentTheme = localStorage.getItem('theme');
+if (!THEMES.includes(currentTheme)) {
+    currentTheme = 'auto';
+}
 
 let sunriseTime = null;
 let sunsetTime = null;
+let sunTimesDate = null;
 let autoThemeInterval = null;
-let currentLatitude = 41.0082;
+let sunTimesRequest = null;
+let currentLatitude = 41.0082; // Varsayılan: İstanbul
 let currentLongitude = 28.9784;
+
+// Önbellek koordinata göre tutulur; konum ~10 km değişmedikçe aynı gün tekrar istek atılmaz
+function sunCacheKey() {
+    return `${currentLatitude.toFixed(1)},${currentLongitude.toFixed(1)}`;
+}
 
 function getDefaultSunTimes() {
     const now = new Date();
@@ -28,156 +27,101 @@ function getDefaultSunTimes() {
 }
 
 function getCachedSunTimes() {
-    const cached = localStorage.getItem('sunTimes');
-    const today = new Date().toDateString();
-    
-    if (cached) {
-        const data = JSON.parse(cached);
-        if (data.date === today) {
-            return {
-                sunrise: new Date(data.sunrise),
-                sunset: new Date(data.sunset)
-            };
+    try {
+        const data = JSON.parse(localStorage.getItem('sunTimes'));
+        if (data && data.date === new Date().toDateString() && data.location === sunCacheKey()) {
+            return { sunrise: new Date(data.sunrise), sunset: new Date(data.sunset) };
         }
+    } catch (e) {
+        // Bozuk önbellek: yok say, yeniden alınacak
     }
     return null;
 }
 
 function cacheSunTimes(sunrise, sunset) {
-    const data = {
+    localStorage.setItem('sunTimes', JSON.stringify({
         date: new Date().toDateString(),
+        location: sunCacheKey(),
         sunrise: sunrise.toISOString(),
         sunset: sunset.toISOString()
-    };
-    localStorage.setItem('sunTimes', JSON.stringify(data));
+    }));
 }
 
 function updateLocationForThemes(lat, lng) {
-    currentLatitude = lat;
-    currentLongitude = lng;
-    console.log(`📍 Updated theme location to: ${lat}, ${lng}`);
-    
+    currentLatitude = Number(lat);
+    currentLongitude = Number(lng);
     if (currentTheme === 'auto') {
-        initAutoTheme();
+        loadSunTimes();
     }
 }
 
-window.updateLocationForThemes = updateLocationForThemes;
-
-function toggleTheme() {
-    const currentIndex = themes.indexOf(currentTheme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    currentTheme = themes[nextIndex];
-    localStorage.setItem('theme', currentTheme);
-    
-    if (currentTheme !== 'auto' && autoThemeInterval) {
-        clearInterval(autoThemeInterval);
-        autoThemeInterval = null;
-    }
-    
-    updateTheme();
-    updateThemeToggleUI();
-    
-    if (currentTheme === 'auto') {
-        initAutoTheme();
-    }
-}
-
-async function getSunriseSunsetTimes() {
+async function fetchSunriseSunsetTimes() {
     try {
-        console.log(`🌅 Getting sunrise/sunset times for: ${currentLatitude}, ${currentLongitude}`);
-        
         const response = await fetch(`https://api.sunrise-sunset.org/json?lat=${currentLatitude}&lng=${currentLongitude}&formatted=0`);
         const data = await response.json();
-        
         if (data.status === 'OK') {
             const sunrise = new Date(data.results.sunrise);
             const sunset = new Date(data.results.sunset);
-            
-            sunriseTime = sunrise;
-            sunsetTime = sunset;
-            
             cacheSunTimes(sunrise, sunset);
-            
-            console.log(`🌅 Sunrise: ${sunrise.toLocaleTimeString()}, Sunset: ${sunset.toLocaleTimeString()}`);
-            return true;
+            return { sunrise, sunset };
         }
     } catch (error) {
-        console.error('Error fetching sunrise/sunset times:', error);
-        
-        const cached = getCachedSunTimes();
-        if (cached) {
-            sunriseTime = cached.sunrise;
-            sunsetTime = cached.sunset;
-            console.log('Using cached sunrise/sunset times');
-            return true;
-        }
-        
-        const defaults = getDefaultSunTimes();
-        sunriseTime = defaults.sunrise;
-        sunsetTime = defaults.sunset;
-        console.log('Using fallback sunrise/sunset times');
-        return false;
+        console.warn('Sunrise/sunset fetch failed:', error);
     }
+    return null;
+}
+
+// Önce önbellek ya da varsayılan saatlerle hemen uygular; önbellek yoksa arka planda bir kez API'ye sorar
+function loadSunTimes() {
+    const cached = getCachedSunTimes();
+    const times = cached || getDefaultSunTimes();
+    sunriseTime = times.sunrise;
+    sunsetTime = times.sunset;
+    sunTimesDate = new Date().toDateString();
+    applyAutoTheme();
+
+    if (cached || sunTimesRequest) return;
+
+    sunTimesRequest = fetchSunriseSunsetTimes().then(fresh => {
+        sunTimesRequest = null;
+        if (fresh) {
+            sunriseTime = fresh.sunrise;
+            sunsetTime = fresh.sunset;
+            applyAutoTheme();
+        }
+    });
 }
 
 function getAutoTheme() {
-    if (!sunriseTime || !sunsetTime) {
-        return 'light';
-    }
-    
-    const now = new Date();
-    const currentTime = now.getTime();
-    const sunrise = sunriseTime.getTime();
-    const sunset = sunsetTime.getTime();
-    
-    if (currentTime >= sunrise && currentTime < sunset) {
-        return 'light';
-    } else {
-        return 'dark';
-    }
+    if (!sunriseTime || !sunsetTime) return 'light';
+    const now = Date.now();
+    return now >= sunriseTime.getTime() && now < sunsetTime.getTime() ? 'light' : 'dark';
 }
 
-async function initAutoTheme() {
-    console.log('Initializing auto theme...');
-    
-    const cached = getCachedSunTimes();
-    if (cached) {
-        sunriseTime = cached.sunrise;
-        sunsetTime = cached.sunset;
-        console.log('Using cached times for immediate theme application');
-    } else {
-        const defaults = getDefaultSunTimes();
-        sunriseTime = defaults.sunrise;
-        sunsetTime = defaults.sunset;
-        console.log('Using default times for immediate theme application');
-    }
-    
-    applyAutoTheme();
-    
-    getSunriseSunsetTimes().then(() => {
-        applyAutoTheme();
+function applyThemeClasses(theme) {
+    [document.documentElement, document.body].forEach(el => {
+        el.classList.remove('dark-mode', 'midnight-mode');
+        if (theme === 'dark') el.classList.add('dark-mode');
+        if (theme === 'midnight') el.classList.add('midnight-mode');
     });
-    
-    if (autoThemeInterval) {
-        clearInterval(autoThemeInterval);
-    }
-    autoThemeInterval = setInterval(applyAutoTheme, 60000);
 }
 
 function applyAutoTheme() {
     if (currentTheme !== 'auto') return;
-    
-    const autoTheme = getAutoTheme();
-    console.log(`Auto theme: ${autoTheme} (based on time: ${new Date().toLocaleTimeString()})`);
-    
-    document.body.classList.remove('dark-mode', 'midnight-mode');
-    document.documentElement.classList.remove('dark-mode', 'midnight-mode');
-    
-    if (autoTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        document.documentElement.classList.add('dark-mode');
-    }
+    applyThemeClasses(getAutoTheme());
+}
+
+function initAutoTheme() {
+    loadSunTimes();
+    if (autoThemeInterval) clearInterval(autoThemeInterval);
+    autoThemeInterval = setInterval(() => {
+        // Gün değiştiyse yeni günün saatlerini al
+        if (sunTimesDate !== new Date().toDateString()) {
+            loadSunTimes();
+        } else {
+            applyAutoTheme();
+        }
+    }, 60000);
 }
 
 function updateTheme() {
@@ -185,76 +129,28 @@ function updateTheme() {
         initAutoTheme();
         return;
     }
-    
+
     if (autoThemeInterval) {
         clearInterval(autoThemeInterval);
         autoThemeInterval = null;
     }
-    
-    document.body.classList.remove('dark-mode', 'midnight-mode');
-    document.documentElement.classList.remove('dark-mode', 'midnight-mode');
-    
-    if (currentTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        document.documentElement.classList.add('dark-mode');
-    } else if (currentTheme === 'midnight') {
-        document.body.classList.add('midnight-mode');
-        document.documentElement.classList.add('midnight-mode');
+    applyThemeClasses(currentTheme);
+}
+
+// weather.js'in önbelleğe aldığı konum varsa ilk hesaplamada onu kullan
+// (yoksa varsayılan koordinatla önbellek ıskalanır ve gereksiz istek atılır)
+function loadSavedThemeLocation() {
+    try {
+        const entry = JSON.parse(localStorage.getItem('weatherLocation'));
+        if (entry && entry.data && Number.isFinite(entry.data.latitude) && Number.isFinite(entry.data.longitude)) {
+            currentLatitude = entry.data.latitude;
+            currentLongitude = entry.data.longitude;
+        }
+    } catch (e) {
+        // Bozuk önbellek: varsayılan konum kullanılır
     }
 }
 
-function updateThemeToggleUI() {
-    const themeDisplay = document.getElementById('theme-display');
-    const themeIcon = document.getElementById('theme-icon');
-    
-    if (themeDisplay && themeIcon) {
-        const currentLang = (typeof getCurrentLanguage === 'function') ? getCurrentLanguage() : 
-                           (window.currentLanguage || 'en');
-        
-        const themeTranslations = {
-            'auto': { 'tr': 'Otomatik', 'en': 'Auto' },
-            'light': { 'tr': 'Açık', 'en': 'Light' },
-            'dark': { 'tr': 'Koyu', 'en': 'Dark' },
-            'midnight': { 'tr': 'Gece', 'en': 'Midnight' }
-        };
-        
-        const themeText = themeTranslations[currentTheme] ? 
-                         themeTranslations[currentTheme][currentLang] || themeTranslations[currentTheme]['en'] :
-                         themeNames[currentTheme];
-        
-        themeDisplay.textContent = themeText;
-        themeIcon.className = `theme-icon ${themeIcons[currentTheme]}`;
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing theme...');
-    
-    if (currentTheme === 'auto') {
-        initAutoTheme();
-    } else {
-        updateTheme();
-    }
-    
-    updateThemeToggleUI();
-});
-
-if (currentTheme === 'auto') {
-    const cached = getCachedSunTimes();
-    if (cached) {
-        sunriseTime = cached.sunrise;
-        sunsetTime = cached.sunset;
-    } else {
-        const defaults = getDefaultSunTimes();
-        sunriseTime = defaults.sunrise;
-        sunsetTime = defaults.sunset;
-    }
-    
-    const autoTheme = getAutoTheme();
-    if (autoTheme === 'dark') {
-        document.documentElement.classList.add('dark-mode');
-        document.addEventListener('DOMContentLoaded', function() {
-            document.body.classList.add('dark-mode');
-        });
-    }
-}
+// Script'ler body sonunda yüklendiği için body hazır: temayı ilk boyamadan önce uygula
+loadSavedThemeLocation();
+updateTheme();

@@ -1,8 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Custom New Tab Dashboard",
+  "name": "Browser Startup",
   "version": "1.0",
-  "description": "A customizable new tab dashboard with shortcuts, widgets, themes, and local settings.",
+  "description": "A customizable new-tab dashboard with shortcuts, vocabulary cards, weather, and focus tools.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "chrome_url_overrides": {
     "newtab": "index.html"
   }

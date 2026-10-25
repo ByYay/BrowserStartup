@@ -1,3 +1,4 @@
+/* Pomodoro Widget Styles */
 .clock-widget {
     display: none;
     background: transparent;
@@ -231,18 +232,4 @@
 .midnight-mode .pomodoro-btn.secondary {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.12);
-}
-
-@media (max-width: 700px) {
-    .clock-display {
-        padding: 22px 14px;
-    }
-
-    .time-main {
-        font-size: 3.6rem;
-    }
-
-    .pomodoro-meta {
-        grid-template-columns: 1fr;
-    }
 }

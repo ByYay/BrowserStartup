@@ -25,12 +25,14 @@
     position: relative;
     overflow: hidden;
     transform-origin: center;
+    /* Spotlight vars */
     --sx: 50%;
     --sy: 50%;
     --so: 0;
     --sc: rgba(99, 155, 255, 0.30);
 }
 
+/* Spotlight */
 .shortcut::before {
     content: '';
     position: absolute;
@@ -82,8 +84,8 @@
 }
 
 .shortcut i {
-    font-size: 2rem;
-    margin-bottom: 8px;
+    font-size: 2rem; /* 2.2rem'den 2rem'e küçült */
+    margin-bottom: 8px; /* 10px'den 8px'e küçült */
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     position: relative;
@@ -91,9 +93,10 @@
 }
 
 .shortcut img {
-    width: 2rem;
-    height: 2rem;
-    margin-bottom: 8px;
+    width: 2rem; /* 2.2rem'den 2rem'e küçült */
+    height: 2rem; /* 2.2rem'den 2rem'e küçült */
+    object-fit: contain; /* Kare olmayan yüklenen görseller ezilmesin */
+    margin-bottom: 8px; /* 10px'den 8px'e küçült */
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
     position: relative;
@@ -123,6 +126,10 @@
     color: #ea4335; 
     text-shadow: 0 0 20px rgba(234, 67, 53, 0.5);
 }
+.shortcut.igumail:hover i { 
+    color: #4285f4; 
+    text-shadow: 0 0 20px rgba(66, 133, 244, 0.5);
+}
 .shortcut.youtube:hover i { 
     color: #ff0000; 
     text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
@@ -135,10 +142,6 @@
     color: #10a37f; 
     text-shadow: 0 0 20px rgba(16, 163, 127, 0.5);
 }
-.shortcut.stackoverflow:hover i {
-    color: #f48024;
-    text-shadow: 0 0 20px rgba(244, 128, 36, 0.5);
-}
 .shortcut.translate:hover i { 
     color: #4285f4; 
     text-shadow: 0 0 20px rgba(66, 133, 244, 0.5);
@@ -147,14 +150,39 @@
     color: #0077b5; 
     text-shadow: 0 0 20px rgba(0, 119, 181, 0.5);
 }
+.shortcut.tryhackme:hover i { 
+    color: #88cc14; 
+    text-shadow: 0 0 20px rgba(136, 204, 20, 0.5);
+}
+.shortcut.turkhackteam:hover i { 
+    color: #c0392b; 
+    text-shadow: 0 0 20px rgba(192, 57, 43, 0.5);
+}
+.shortcut.chess:hover i { 
+    color: #81b64c; 
+    text-shadow: 0 0 20px rgba(129, 182, 76, 0.5);
+}
+.shortcut.education:hover i { 
+    color: #e74c3c; 
+    text-shadow: 0 0 20px rgba(231, 76, 60, 0.5);
+}
+.shortcut.lms:hover i { 
+    color: #2c3e50; 
+    text-shadow: 0 0 20px rgba(44, 62, 80, 0.5);
+}
 
 .shortcut.gmail i { color: #ea4335; }
+.shortcut.igumail i { color: #4285f4; }
 .shortcut.youtube i { color: #ff0000; }
 .shortcut.github i { color: #333; }
 .shortcut.chatgpt i { color: #10a37f; }
-.shortcut.stackoverflow i { color: #f48024; }
 .shortcut.translate i { color: #4285f4; }
 .shortcut.linkedin i { color: #0077b5; }
+.shortcut.tryhackme i { color: #88cc14; }
+.shortcut.turkhackteam i { color: #c0392b; }
+.shortcut.chess i { color: #81b64c; }
+.shortcut.education i { color: #e74c3c; }
+.shortcut.lms i { color: #2c3e50; }
 
 .shortcut span {
     font-size: 0.72rem;
@@ -175,6 +203,7 @@
     text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
+/* Context Menu Styles */
 .context-menu {
     position: fixed;
     background: rgba(255, 255, 255, 0.95);
@@ -191,6 +220,11 @@
 .context-menu-item {
     display: flex;
     align-items: center;
+    width: 100%;
+    border: none;
+    background: none;
+    font: inherit;
+    text-align: left;
     padding: 12px 16px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -214,6 +248,7 @@
     text-align: center;
 }
 
+/* Modal Styles */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -236,7 +271,7 @@
     border: 1px solid rgba(255, 255, 255, 0.3);
     width: 90%;
     max-width: 550px;
-    max-height: 90vh;
+    max-height: 90%;
     overflow-y: auto;
     animation: modalSlideUp 0.3s ease;
     display: flex;
@@ -303,6 +338,7 @@
     font-size: 0.9rem;
 }
 
+/* Unified styles for inputs and selects */
 .input-group input,
 .input-group select {
     width: 100%;
@@ -314,6 +350,7 @@
     background: rgba(255, 255, 255, 0.7);
 }
 
+/* SELECT ONLY: Remove default appearance and add custom arrow - FORCE OVERRIDE */
 .shortcut-modal .input-group select,
 .input-group select {
     -webkit-appearance: none !important;
@@ -324,6 +361,7 @@
     background-position: right 12px center !important;
     background-size: 16px !important;
     padding-right: 40px !important;
+    /* Force no additional backgrounds */
     background-attachment: scroll !important;
     background-clip: padding-box !important;
     background-origin: padding-box !important;
@@ -334,6 +372,62 @@
     outline: none;
     border-color: #3498db;
     background: rgba(255, 255, 255, 0.9);
+}
+
+/* İkon alanı: önizleme + metin + "Dosya seç" */
+.icon-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-input-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.icon-preview {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.7);
+    color: #2c3e50;
+    font-size: 1.2rem;
+    overflow: hidden;
+}
+
+.icon-preview img {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+}
+
+.icon-file-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 42px;
+    padding: 0 14px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.7);
+    color: #2c3e50;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.icon-file-btn:hover {
+    border-color: #3498db;
+    color: #3498db;
 }
 
 .input-group small {
@@ -387,6 +481,7 @@
     transform: translateY(-1px);
 }
 
+/* Dark Mode Support */
 .dark-mode .context-menu {
     background: rgba(45, 45, 45, 0.95);
     border-color: rgba(255, 255, 255, 0.1);
@@ -413,6 +508,7 @@
     color: #e8eaed;
 }
 
+/* Dark mode unified styles */
 .dark-mode .input-group input,
 .dark-mode .input-group select {
     background: rgba(255, 255, 255, 0.1);
@@ -420,9 +516,22 @@
     color: #e8eaed;
 }
 
+/* Dark mode SELECT ONLY: Custom arrow color - FORCE OVERRIDE */
 .dark-mode .shortcut-modal .input-group select,
 .dark-mode .input-group select {
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8eaed' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+}
+
+.dark-mode .icon-preview,
+.dark-mode .icon-file-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #e8eaed;
+}
+
+.dark-mode .icon-file-btn:hover {
+    border-color: #4a9eff;
+    color: #4a9eff;
 }
 
 .dark-mode .input-group input:focus,
@@ -445,6 +554,7 @@
     background: rgba(255, 255, 255, 0.15);
 }
 
+/* Select option improvements for dark mode */
 .dark-mode .input-group select option {
     background: #2d2d2d;
     color: #e8eaed;
@@ -457,6 +567,7 @@
     color: white;
 }
 
+/* Color Picker Styles */
 .color-picker-group {
     animation: slideDown 0.3s ease;
 }
@@ -493,6 +604,7 @@
 .color-swatch {
     width: 28px;
     height: 28px;
+    padding: 0;
     border-radius: 6px;
     cursor: pointer;
     border: 2px solid transparent;
@@ -583,6 +695,7 @@
     font-size: 1.1rem;
 }
 
+/* Custom Color Shortcut Styles */
 .shortcut.custom-color {
     position: relative;
 }
@@ -596,6 +709,7 @@
     color: var(--custom-color) !important;
 }
 
+/* Dark mode color picker styles */
 .dark-mode .color-palette {
     background: rgba(255, 255, 255, 0.05);
     border-color: rgba(255, 255, 255, 0.1);

@@ -16,21 +16,23 @@ function getPomodoroConfig() {
 function setPomodoroConfig(config) {
     localStorage.setItem('pomodoroWorkMinutes', String(config.workMinutes));
     localStorage.setItem('pomodoroBreakMinutes', String(config.breakMinutes));
-
-    if (typeof clockWidget !== 'undefined' && clockWidget) {
-        clockWidget.applySettings(config, { reset: !clockWidget.isRunning });
-    }
+    clockWidget.applySettings({ reset: !clockWidget.isRunning });
 }
 
-let clockWidget = {
+const clockWidget = {
     initialized: false,
     isRunning: false,
     isPaused: false,
     isBreakPhase: false,
     totalSeconds: POMODORO_DEFAULTS.workMinutes * 60,
     remainingSeconds: POMODORO_DEFAULTS.workMinutes * 60,
+    // Kalan süre her tick'te bu zaman damgasından hesaplanır; arka plan sekmesinde
+    // setInterval yavaşlasa bile sayaç kaymaz
+    phaseEndTime: null,
     sessionCount: 0,
+    statusKey: 'pomodoro-ready',
     timerInterval: null,
+    audioContext: null,
 
     init() {
         if (this.initialized) {
@@ -38,46 +40,42 @@ let clockWidget = {
             return;
         }
 
-        const config = getPomodoroConfig();
-        this.totalSeconds = config.workMinutes * 60;
+        this.totalSeconds = getPomodoroConfig().workMinutes * 60;
         this.remainingSeconds = this.totalSeconds;
 
-        document.addEventListener('languageChanged', () => {
-            this.render();
-            this.updateButtonTexts();
+        document.getElementById('pomodoroStartStopBtn').addEventListener('click', () => this.toggleStartStop());
+        document.getElementById('pomodoroPauseResumeBtn').addEventListener('click', () => this.togglePauseResume());
+        document.getElementById('pomodoroSkipBtn').addEventListener('click', () => this.skipPhase());
+
+        document.addEventListener('languageChanged', () => this.render());
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) this.tick();
         });
 
         this.initialized = true;
         this.render();
-        this.updateButtonTexts();
     },
 
-    applySettings(config, options = { reset: true }) {
-        const nextWork = Math.max(1, parseInt(config.workMinutes, 10) || POMODORO_DEFAULTS.workMinutes);
-        const nextBreak = Math.max(1, parseInt(config.breakMinutes, 10) || POMODORO_DEFAULTS.breakMinutes);
-
+    applySettings(options = { reset: true }) {
         if (options.reset) {
             this.isBreakPhase = false;
             this.isRunning = false;
             this.isPaused = false;
-            this.totalSeconds = nextWork * 60;
+            this.phaseEndTime = null;
+            this.totalSeconds = getPomodoroConfig().workMinutes * 60;
             this.remainingSeconds = this.totalSeconds;
             this.stopInterval();
-            this.setStatus('pomodoro-ready');
+            this.statusKey = 'pomodoro-ready';
         }
-
-        this.renderMeta(nextWork, nextBreak);
         this.render();
-        this.updateButtonTexts();
     },
 
     toggleStartStop() {
-        if (!this.isRunning) {
+        if (this.isRunning) {
+            this.stopTimer();
+        } else {
             this.startTimer();
-            return;
         }
-
-        this.stopTimer();
     },
 
     togglePauseResume() {
@@ -86,84 +84,61 @@ let clockWidget = {
         this.isPaused = !this.isPaused;
 
         if (this.isPaused) {
+            this.remainingSeconds = this.getRemainingSeconds();
+            this.phaseEndTime = null;
             this.playPhaseSound('paused');
             this.stopInterval();
-            this.setStatus('pomodoro-paused');
+            this.statusKey = 'pomodoro-paused';
         } else {
+            this.phaseEndTime = Date.now() + this.remainingSeconds * 1000;
             this.playPhaseSound('resumed');
             this.startInterval();
-            this.setStatus(this.isBreakPhase ? 'pomodoro-break-running' : 'pomodoro-work-running');
+            this.statusKey = this.runningStatusKey();
         }
 
-        this.updateButtonTexts();
+        this.render();
     },
 
     skipPhase() {
         if (!this.isRunning) return;
-
-        const config = getPomodoroConfig();
         this.playPhaseSound('skip');
-
-        if (this.isBreakPhase) {
-            this.isBreakPhase = false;
-            this.totalSeconds = config.workMinutes * 60;
-            this.remainingSeconds = this.totalSeconds;
-        } else {
-            this.isBreakPhase = true;
-            this.totalSeconds = config.breakMinutes * 60;
-            this.remainingSeconds = this.totalSeconds;
-            this.sessionCount += 1;
+        this.switchPhase(Date.now());
+        if (this.isPaused) {
+            this.phaseEndTime = null;
         }
-
+        this.statusKey = this.isPaused ? 'pomodoro-paused' : this.runningStatusKey();
         this.render();
-        this.renderMeta(config.workMinutes, config.breakMinutes);
     },
 
     startTimer() {
         const config = getPomodoroConfig();
-        const wasStopped = !this.isRunning;
-        if (this.remainingSeconds <= 0) {
-            this.isBreakPhase = false;
-            this.totalSeconds = config.workMinutes * 60;
-            this.remainingSeconds = this.totalSeconds;
-        }
-
-        if (!this.isBreakPhase && this.remainingSeconds === this.totalSeconds && this.totalSeconds !== config.workMinutes * 60) {
-            this.totalSeconds = config.workMinutes * 60;
-            this.remainingSeconds = this.totalSeconds;
-        }
-
+        this.isBreakPhase = false;
+        this.totalSeconds = config.workMinutes * 60;
+        this.remainingSeconds = this.totalSeconds;
+        this.phaseEndTime = Date.now() + this.totalSeconds * 1000;
         this.isRunning = true;
         this.isPaused = false;
         this.startInterval();
-
-        if (wasStopped) {
-            this.playPhaseSound('work-start');
-        }
-
-        this.setStatus(this.isBreakPhase ? 'pomodoro-break-running' : 'pomodoro-work-running');
-        this.updateButtonTexts();
+        this.playPhaseSound('work-start');
+        this.statusKey = this.runningStatusKey();
         this.render();
     },
 
     stopTimer() {
-        const config = getPomodoroConfig();
         this.isRunning = false;
         this.isPaused = false;
         this.isBreakPhase = false;
-        this.totalSeconds = config.workMinutes * 60;
+        this.phaseEndTime = null;
+        this.totalSeconds = getPomodoroConfig().workMinutes * 60;
         this.remainingSeconds = this.totalSeconds;
         this.stopInterval();
-        this.setStatus('pomodoro-ready');
-        this.updateButtonTexts();
+        this.statusKey = 'pomodoro-ready';
         this.render();
     },
 
     startInterval() {
         this.stopInterval();
-        this.timerInterval = setInterval(() => {
-            this.tick();
-        }, 1000);
+        this.timerInterval = setInterval(() => this.tick(), 1000);
     },
 
     stopInterval() {
@@ -173,53 +148,66 @@ let clockWidget = {
         }
     },
 
-    tick() {
-        if (!this.isRunning || this.isPaused) return;
-
-        this.remainingSeconds -= 1;
-
-        if (this.remainingSeconds <= 0) {
-            this.handlePhaseComplete();
-            return;
-        }
-
-        this.render();
+    getRemainingSeconds() {
+        if (!this.phaseEndTime) return this.remainingSeconds;
+        return Math.max(0, Math.ceil((this.phaseEndTime - Date.now()) / 1000));
     },
 
-    handlePhaseComplete() {
-        const justFinishedBreak = this.isBreakPhase;
+    runningStatusKey() {
+        return this.isBreakPhase ? 'pomodoro-break-running' : 'pomodoro-work-running';
+    },
+
+    // Bir sonraki faza geç; yeni faz verilen andan itibaren başlar
+    switchPhase(startTime) {
         const config = getPomodoroConfig();
-
-        if (!justFinishedBreak) {
-            this.playPhaseSound('work-end');
-        }
-
-        if (justFinishedBreak) {
+        if (this.isBreakPhase) {
             this.isBreakPhase = false;
             this.totalSeconds = config.workMinutes * 60;
-            this.remainingSeconds = this.totalSeconds;
-            this.setStatus('pomodoro-work-started');
-
-            setTimeout(() => {
-                this.playPhaseSound('work-start');
-            }, 520);
         } else {
             this.isBreakPhase = true;
             this.totalSeconds = config.breakMinutes * 60;
-            this.remainingSeconds = this.totalSeconds;
             this.sessionCount += 1;
-            this.setStatus('pomodoro-break-started');
+        }
+        this.remainingSeconds = this.totalSeconds;
+        this.phaseEndTime = startTime + this.totalSeconds * 1000;
+    },
+
+    tick() {
+        if (!this.isRunning || this.isPaused) return;
+
+        // Sekme uzun süre arka planda kaldıysa birden fazla faz geçmiş olabilir
+        let completedPhase = false;
+        while (this.phaseEndTime <= Date.now()) {
+            const finishedBreak = this.isBreakPhase;
+            this.switchPhase(this.phaseEndTime);
+            this.statusKey = finishedBreak ? 'pomodoro-work-started' : 'pomodoro-break-started';
+            completedPhase = true;
         }
 
+        if (completedPhase) {
+            if (this.isBreakPhase) {
+                this.playPhaseSound('work-end');
+            } else {
+                this.playPhaseSound('work-start');
+            }
+        }
+
+        this.remainingSeconds = this.getRemainingSeconds();
         this.render();
-        this.renderMeta(config.workMinutes, config.breakMinutes);
     },
 
     playPhaseSound(phaseType) {
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         if (!AudioContextClass) return;
 
-        const ctx = new AudioContextClass();
+        if (!this.audioContext) {
+            this.audioContext = new AudioContextClass();
+        }
+        const ctx = this.audioContext;
+        if (ctx.state === 'suspended') {
+            ctx.resume().catch(() => {});
+        }
+
         const soundMap = {
             'work-start': [784, 988, 1175],
             'work-end': [659, 554, 440],
@@ -248,33 +236,6 @@ let clockWidget = {
             oscillator.stop(timeOffset + 0.36);
             timeOffset += 0.22;
         });
-
-        setTimeout(() => {
-            if (ctx.state !== 'closed') {
-                ctx.close().catch(() => {});
-            }
-        }, 1800);
-    },
-
-    getStatusTextKey() {
-        if (this.isRunning && !this.isPaused) {
-            return this.isBreakPhase ? 'pomodoro-break-running' : 'pomodoro-work-running';
-        }
-        if (this.isPaused) {
-            return 'pomodoro-paused';
-        }
-        return 'pomodoro-ready';
-    },
-
-    setStatus(key) {
-        const el = document.getElementById('pomodoroStatusText');
-        if (!el) return;
-
-        const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-        const value = translations[lang] && translations[lang][key] ? translations[lang][key] : '';
-        if (value) {
-            el.textContent = value;
-        }
     },
 
     formatTime(totalSeconds) {
@@ -283,99 +244,42 @@ let clockWidget = {
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     },
 
-    updateButtonTexts() {
-        const startStopText = document.getElementById('pomodoroStartStopText');
-        const pauseResumeText = document.getElementById('pomodoroPauseResumeText');
+    updateButtons() {
         const startStopBtn = document.getElementById('pomodoroStartStopBtn');
         const pauseResumeBtn = document.getElementById('pomodoroPauseResumeBtn');
-        const skipBtn = document.getElementById('pomodoroSkipBtn');
 
-        const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-        const tr = translations[lang] || translations.en;
+        document.getElementById('pomodoroStartStopText').textContent = t(this.isRunning ? 'pomodoro-stop' : 'pomodoro-start');
+        document.getElementById('pomodoroPauseResumeText').textContent = t(this.isPaused ? 'pomodoro-resume' : 'pomodoro-pause');
+        document.getElementById('pomodoroSkipText').textContent = t('pomodoro-skip');
 
-        if (startStopText) {
-            startStopText.textContent = this.isRunning ? tr['pomodoro-stop'] : tr['pomodoro-start'];
-        }
+        pauseResumeBtn.disabled = !this.isRunning;
+        document.getElementById('pomodoroSkipBtn').disabled = !this.isRunning;
 
-        if (pauseResumeText) {
-            pauseResumeText.textContent = this.isPaused ? tr['pomodoro-resume'] : tr['pomodoro-pause'];
-        }
-
-        if (pauseResumeBtn) {
-            pauseResumeBtn.disabled = !this.isRunning;
-        }
-
-        if (skipBtn) {
-            skipBtn.disabled = !this.isRunning;
-        }
-
-        if (startStopBtn) {
-            const icon = startStopBtn.querySelector('i');
-            if (icon) {
-                icon.className = this.isRunning ? 'fas fa-stop' : 'fas fa-play';
-            }
-        }
-
-        if (pauseResumeBtn) {
-            const icon = pauseResumeBtn.querySelector('i');
-            if (icon) {
-                icon.className = this.isPaused ? 'fas fa-play' : 'fas fa-pause';
-            }
-        }
+        startStopBtn.querySelector('i').className = this.isRunning ? 'fas fa-stop' : 'fas fa-play';
+        pauseResumeBtn.querySelector('i').className = this.isPaused ? 'fas fa-play' : 'fas fa-pause';
     },
 
-    renderMeta(workMinutes, breakMinutes) {
-        const workDisplay = document.getElementById('pomodoroWorkDisplay');
-        const breakDisplay = document.getElementById('pomodoroBreakDisplay');
-        const sessionCountDisplay = document.getElementById('pomodoroSessionCount');
-        const phaseLabel = document.getElementById('pomodoroPhaseLabel');
-
-        const lang = typeof currentLanguage !== 'undefined' ? currentLanguage : 'en';
-        const tr = translations[lang] || translations.en;
-
-        if (workDisplay) {
-            workDisplay.textContent = lang === 'tr' ? `${workMinutes} dk` : `${workMinutes} min`;
-        }
-
-        if (breakDisplay) {
-            breakDisplay.textContent = lang === 'tr' ? `${breakMinutes} dk` : `${breakMinutes} min`;
-        }
-
-        if (sessionCountDisplay) {
-            sessionCountDisplay.textContent = String(this.sessionCount);
-        }
-
-        if (phaseLabel) {
-            phaseLabel.textContent = this.isBreakPhase ? tr['pomodoro-break-phase'] : tr['pomodoro-work-phase'];
-        }
+    renderMeta() {
+        const config = getPomodoroConfig();
+        const unit = t('minutes-short');
+        document.getElementById('pomodoroWorkDisplay').textContent = `${config.workMinutes} ${unit}`;
+        document.getElementById('pomodoroBreakDisplay').textContent = `${config.breakMinutes} ${unit}`;
+        document.getElementById('pomodoroSessionCount').textContent = String(this.sessionCount);
+        document.getElementById('pomodoroPhaseLabel').textContent = t(this.isBreakPhase ? 'pomodoro-break-phase' : 'pomodoro-work-phase');
     },
 
     renderProgress() {
         const progressFill = document.getElementById('pomodoroProgressFill');
-        if (!progressFill || this.totalSeconds <= 0) return;
-
+        if (this.totalSeconds <= 0) return;
         const completedRatio = ((this.totalSeconds - this.remainingSeconds) / this.totalSeconds) * 100;
         progressFill.style.width = `${Math.max(0, Math.min(100, completedRatio))}%`;
     },
 
     render() {
-        const timerEl = document.getElementById('pomodoroTime');
-        if (timerEl) {
-            timerEl.textContent = this.formatTime(this.remainingSeconds);
-        }
-
-        const config = getPomodoroConfig();
-        this.renderMeta(config.workMinutes, config.breakMinutes);
+        document.getElementById('pomodoroTime').textContent = this.formatTime(this.remainingSeconds);
+        document.getElementById('pomodoroStatusText').textContent = t(this.statusKey);
+        this.renderMeta();
         this.renderProgress();
-        this.setStatus(this.getStatusTextKey());
-        this.updateButtonTexts();
-    },
-
-    destroy() {
-        this.stopInterval();
+        this.updateButtons();
     }
 };
-
-document.addEventListener('DOMContentLoaded', () => {
-    clockWidget.init();
-});

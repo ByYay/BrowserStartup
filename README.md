@@ -1,178 +1,157 @@
+<div align="center">
+
+<img src="icons/icon128.png" alt="Browser Startup icon" width="96" height="96">
+
 # Browser Startup
 
-A clean, customizable browser **new tab** dashboard built with vanilla **HTML, CSS, and JavaScript** — featuring quick-launch shortcuts, productivity widgets, multiple themes, and fully local settings. No build step, no backend, no tracking.
+**A calm, customizable new-tab dashboard for Chrome and Edge.**
 
-![Custom New Tab Dashboard](screenshots/hero.png)
+Shortcuts, English–Turkish vocabulary cards, a calendar, a password generator, weather, and a Pomodoro timer, all on one page.
 
-<p align="center">
-  <img alt="Manifest V3" src="https://img.shields.io/badge/Manifest-V3-4285F4">
-  <img alt="Vanilla JS" src="https://img.shields.io/badge/Built%20with-Vanilla%20JS-F7DF1E">
-  <img alt="Zero dependencies" src="https://img.shields.io/badge/dependencies-0-brightgreen">
-  <img alt="Languages" src="https://img.shields.io/badge/i18n-EN%20%7C%20TR-blue">
-  <img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-green">
-</p>
+![Manifest V3](https://img.shields.io/badge/Manifest-V3-4285F4?logo=googlechrome&logoColor=white)
+![Vanilla JS](https://img.shields.io/badge/JavaScript-vanilla-F7DF1E?logo=javascript&logoColor=black)
+![No build step](https://img.shields.io/badge/build-none-2ea44f)
+![Languages](https://img.shields.io/badge/UI-English%20%7C%20T%C3%BCrk%C3%A7e-8A2BE2)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
 
-## Table of Contents
+[Features](#features) · [Screenshots](#screenshots) · [Installation](#installation) · [Usage](#usage) · [Privacy](#privacy-and-external-connections)
 
-- [Features](#features)
-- [Screenshots](#screenshots)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Configuration](#configuration)
-- [Project Structure](#project-structure)
-- [Tech Stack](#tech-stack)
-- [Privacy](#privacy)
-- [Security Notes](#security-notes)
-- [License](#license)
+![Browser Startup in the light theme](screenshots/hero.png)
+
+</div>
 
 ## Features
 
-- **Quick-launch shortcuts** — an editable grid of links with Font Awesome or custom image icons, preset brand colors, and a custom color picker. Right-click any shortcut to edit or delete it, and add new ones from the settings panel.
-- **Smart search** — search the web from the dashboard, or toggle **ChatGPT mode** to send your query straight to ChatGPT.
-- **Productivity widgets** in a single switchable panel:
-  - **Calendar** — monthly view with week numbers and today / weekend highlighting.
-  - **Calculator** — full keyboard support (numbers, operators, `Esc`, `Backspace`, `Enter`).
-  - **Password Generator** — cryptographically secure passwords (4–50 chars) with character-set toggles, a live strength meter, and one-click copy.
-  - **Weather** — automatic IP-based location with current conditions and a 5-day forecast. Works out of the box with public weather data, and supports your own WeatherAPI.com key.
-  - **Pomodoro Timer** — configurable work / break durations, session counter, and start / pause / skip controls.
-- **Four themes** — `Auto` (switches by local sunrise/sunset), `Light`, `Dark`, and `Midnight`.
-- **Custom backgrounds** — use the theme gradient or upload your own images with adjustable blur, brightness, contrast, and automatic rotation.
-- **Bilingual UI** — full **English** and **Turkish** translations.
-- **Personalized greeting** — set a username for a time-aware welcome message.
-- **Backup & restore** — export and import your settings as a `.yay` file, or reset everything to defaults.
-- **Fullscreen mode** and a fully **local-first** design — everything is stored in your browser.
-
-## Screenshots
-
-### Themes
-
-<table>
-  <tr>
-    <td align="center" width="50%"><img src="screenshots/dark.png" alt="Dark theme"><br><b>Dark</b></td>
-    <td align="center" width="50%"><img src="screenshots/midnight.png" alt="Midnight theme"><br><b>Midnight</b></td>
-  </tr>
-</table>
+- 🔗 **Shortcuts:** add, edit, and delete links with a right-click. Pick colors and use Font Awesome icons, image URLs, or your own PNG, JPEG, or WebP files. Uploaded icons are resized to 128 px and stored locally.
+- 🔍 **Web and AI search:** search Google, or toggle AI mode to send your query to ChatGPT or Claude. AI mode opens the provider's website; no model runs inside the dashboard.
+- 📚 **Vocabulary cards:** save English words with Turkish meanings and practice them as flip cards in a shuffled order that never shows the same word twice in a row. Meanings come from the browser's built-in Translator or can be typed by hand.
+- 🧩 **Five widgets:** calendar, vocabulary cards, password generator, weather, and Pomodoro timer, switched from a single tab bar.
+- 🎨 **Themes and backgrounds:** Light, Dark, Midnight, or Auto (follows sunrise and sunset). Upload your own backgrounds, adjust blur, brightness, and contrast, and rotate between them.
+- 📐 **Fits any window:** landscape windows keep the two-column layout and scale it to fit; portrait windows stack the panels.
+- 💾 **Backup and restore:** export everything (settings, shortcuts, vocabulary, backgrounds) to a single `.yay` file and import it in another browser.
 
 ### Widgets
 
-<table>
-  <tr>
-    <td align="center" width="50%"><img src="screenshots/calculator.png" alt="Calculator widget"><br><b>Calculator</b></td>
-    <td align="center" width="50%"><img src="screenshots/password.png" alt="Password generator widget"><br><b>Password Generator</b></td>
-  </tr>
-  <tr>
-    <td align="center" width="50%"><img src="screenshots/weather.png" alt="Weather widget"><br><b>Weather</b></td>
-    <td align="center" width="50%"><img src="screenshots/pomodoro.png" alt="Pomodoro timer widget"><br><b>Pomodoro Timer</b></td>
-  </tr>
-</table>
+| Widget | What it does |
+| --- | --- |
+| **Calendar** | Current month with week numbers, today, and weekends highlighted. |
+| **Words** | Flip cards: click once to reveal the meaning, click again to fade to the next word. Add, edit, and delete words in the management view. |
+| **Password** | 4–50 character passwords from Web Crypto, with character-set options, similar-character exclusion, a strength meter, and one-click copy. |
+| **Weather** | Current conditions and a forecast for your IP-based location. Uses an optional WeatherAPI.com key, with Open-Meteo and wttr.in as fallbacks. |
+| **Pomodoro** | Configurable work and break durations, start/pause and skip, and a session counter. |
 
-### Settings
+## Screenshots
 
-![Settings panel](screenshots/settings.png)
+| Dark | Midnight |
+| --- | --- |
+| ![Dark theme](screenshots/dark.png) | ![Midnight theme](screenshots/midnight.png) |
 
-### Make It Your Own
+| Vocabulary cards | Password generator |
+| --- | --- |
+| ![Vocabulary cards with example English and Turkish words](screenshots/vocabulary.png) | ![Password generator showing a disposable demonstration password](screenshots/password.png) |
 
-Upload your own background, expand the shortcut grid, switch to ChatGPT search, and set a personal greeting — here's the dashboard in everyday use:
+| Weather (sample data) | Pomodoro |
+| --- | --- |
+| ![Weather widget with fictional Demo City and sample conditions](screenshots/weather.png) | ![Pomodoro focus timer](screenshots/pomodoro.png) |
 
-<table>
-  <tr>
-    <td align="center" width="50%"><img src="screenshots/custom-dashboard.png" alt="A fully customized dashboard with a custom background and shortcuts"><br><b>Personalized dashboard</b></td>
-    <td align="center" width="50%"><img src="screenshots/custom-background.png" alt="Uploading and managing background images from settings"><br><b>Upload &amp; manage backgrounds</b></td>
-  </tr>
-</table>
+![Settings panel with language, AI provider, and theme options](screenshots/settings.png)
+
+<details>
+<summary><b>Custom backgrounds and shortcuts</b></summary>
+
+<br>
+
+![Alpine lake background with public example shortcuts and Claude search](screenshots/custom-dashboard.png)
+
+![Coastal dusk background with the same example shortcut collection](screenshots/custom-coastal.png)
+
+![Background settings with two landscape images and image filters](screenshots/custom-background.png)
+
+Want to try them? Download [Alpine lake](screenshots/backgrounds/alpine-lake.webp) or [Coastal dusk](screenshots/backgrounds/coastal-dusk.webp) and choose **Settings → Background → Upload Images**. Both images are AI-generated; their [prompts](screenshots/backgrounds/prompts.json) are included.
+
+</details>
+
+> Screenshots were taken in a fresh browser profile with a demo name, public example shortcuts, and example words. The weather screenshot uses sample data.
 
 ## Installation
 
-This is a Chrome **Manifest V3** extension that overrides the new tab page.
+1. Clone the repository, or download it as a ZIP and extract it:
 
-1. Clone or download this repository.
    ```bash
    git clone https://github.com/ByYay/BrowserStartup.git
    ```
-2. Open Chrome and go to `chrome://extensions/`.
-3. Enable **Developer mode** (top-right toggle).
-4. Click **Load unpacked**.
-5. Select the project folder.
-6. Open a new tab to see your dashboard.
 
-> Works in any Chromium-based browser that supports Manifest V3 (Chrome, Edge, Brave, etc.).
+2. Open `chrome://extensions` (Chrome) or `edge://extensions` (Edge).
+3. Turn on **Developer mode** and click **Load unpacked**.
+4. Select the `BrowserStartup` folder (the one containing `manifest.json`).
+5. Open a new tab. 🎉
+
+There is no build step and nothing to install. Other Chromium-based browsers should work too, but automatic translation needs a browser with the built-in Translator API (recent Chrome).
 
 ## Usage
 
-- **Open a new tab** to use the dashboard.
-- **Search** with the search bar, or click the chip icon to toggle **ChatGPT mode**.
-- **Switch widgets** using the tabs at the top of the widget panel.
-- **Manage shortcuts** — right-click a shortcut to **Edit** or **Delete** it; add new ones from **Settings → Shortcuts**.
-- **Open Settings** with the gear button in the bottom-right corner.
-- **Back up** your dashboard by exporting a `.yay` file from **Settings → Data Management**, and restore it later by importing.
-
-## Configuration
-
-All options live in the **Settings** panel:
-
-| Setting | Description |
+| Task | How |
 | --- | --- |
-| **Username** | Personalizes the greeting shown in the header. |
-| **Language / Dil** | Switch the entire UI between English and Turkish. |
-| **Theme** | Choose `Auto`, `Light`, `Dark`, or `Midnight`. |
-| **Background** | Use the theme gradient or upload images with blur / brightness / contrast and rotation controls. |
-| **Pomodoro** | Set custom work and break durations. |
-| **Weather API Key** | Optional [WeatherAPI.com](https://www.weatherapi.com/) key for your own weather data (stored locally, never exported). |
-| **Shortcuts** | Add new shortcuts (edit / delete via right-click on the grid). |
-| **Data Management** | Export / import a `.yay` backup, or reset to defaults. |
+| Search | Type and press **Enter** (**Shift+Enter** for a new line). Click the AI logo to toggle AI mode. |
+| Choose the AI provider | **Settings → Search AI** |
+| Add a shortcut | **Settings → Shortcuts**, or edit the defaults with a right-click. |
+| Use your own icon | In the shortcut editor, click **Choose file**, or enter a Font Awesome class (`fas fa-star`) or `img:https://…` URL. |
+| Add words | Open the **Words** tab and click the pen icon. Type a word; the meaning fills in automatically when translation is available. |
+| Practice | Click a card to see the meaning, click again for the next word. |
+| Switch widgets | Click a tab, or use **←** / **→**, **Home**, and **End** on the tab bar. |
+| Change the look | **Settings** (bottom-right corner): greeting, language, theme, backgrounds, filters. |
+| Back up | **Settings → Data Management → Export / Import** |
 
-## Project Structure
+## Privacy and external connections
+
+Browser Startup has no backend, account, or analytics. Your preferences, shortcuts, and vocabulary stay in the browser's `localStorage`; backgrounds are stored in IndexedDB.
+
+Some features still need the network:
+
+| Service | Used for |
+| --- | --- |
+| Google Fonts, cdnjs (Font Awesome) | Fonts and icons, loaded when the page opens. |
+| Shortcut icon hosts | Default Google/Gmail icons and any image URLs you add. Uploaded icons stay local. |
+| ipapi.co / ipwho.is | Approximate location for weather and Auto theme. |
+| sunrise-sunset.org | Sunrise and sunset times for Auto theme. |
+| WeatherAPI.com, Open-Meteo, wttr.in | Weather for your coordinates. Your API key, if set, goes only to WeatherAPI.com. |
+| Google, ChatGPT, Claude | Your search text, when you submit a search. |
+| Browser Translator | May download a language pack once. Translation itself runs on your device. |
+
+> [!WARNING]
+> **Backups are not encrypted.** A `.yay` file is Base64-encoded JSON that contains your weather API key, name, shortcuts, uploaded icons, vocabulary, and backgrounds. Keep it private and do not commit it; `.gitignore` already excludes `*.yay`.
+
+## Project structure
 
 ```text
-custom-new-tab-dashboard/
-├── css/                # Styles, split per feature (base, widgets, themes, responsive, …)
-├── js/                 # Vanilla JS modules
-│   ├── app.js          # App bootstrap / init
-│   ├── shortcuts.js    # Shortcut grid + context menu
-│   ├── search.js       # Search + ChatGPT mode
-│   ├── calendar.js     # Calendar widget + date/time
-│   ├── calculator.js   # Calculator widget
-│   ├── password.js     # Password generator
-│   ├── weather.js      # Weather widget + geolocation
-│   ├── clock.js        # Pomodoro timer
-│   ├── widgets.js      # Widget panel switching
-│   ├── themes.js       # Theme + auto (sunrise/sunset) logic
-│   ├── background.js   # Background images / filters
-│   ├── settings.js     # Settings panel + export/import
-│   └── translations.js # EN / TR strings
-├── screenshots/        # Images used in this README
-├── index.html          # Dashboard markup
-├── manifest.json       # Chrome extension manifest (MV3)
-├── README.md
-├── LICENSE
-└── .gitignore
+BrowserStartup/
+├── assets/ai-logos/      # ChatGPT and Claude logos for the search bar
+├── css/                  # Styles per feature, plus themes
+├── icons/                # Extension icons (16, 32, 48, 128 px)
+├── js/
+│   ├── app.js            # Start-up and delegated UI actions
+│   ├── scale.js          # Window scaling and portrait layout
+│   ├── search.js         # Google and AI search
+│   ├── shortcuts.js      # Shortcut editor and uploaded icons
+│   ├── vocab.js          # Vocabulary storage, practice, and translation
+│   ├── calendar.js       # Calendar and date/time
+│   ├── password.js       # Password generator
+│   ├── weather.js        # Location, weather providers, and caching
+│   ├── clock.js          # Pomodoro timer
+│   ├── widgets.js        # Widget tabs and keyboard navigation
+│   ├── themes.js         # Themes and sunrise/sunset logic
+│   ├── background.js     # Background storage, filters, and rotation
+│   ├── settings.js       # Preferences, backup, restore, and reset
+│   └── translations.js   # English and Turkish UI text
+├── screenshots/          # README images
+├── index.html
+└── manifest.json
 ```
 
-## Tech Stack
-
-- **Vanilla HTML, CSS, JavaScript** — no frameworks, no build step, zero npm dependencies.
-- **Chrome Extensions Manifest V3** (`chrome_url_overrides.newtab`).
-- **Font Awesome** & **Google Fonts** (loaded via CDN).
-- **Web Crypto API** for secure password generation.
-- Public weather & IP-geolocation services, with **WeatherAPI.com** / **OpenWeatherMap** support.
-
-## Privacy
-
-- No backend server is used.
-- No analytics or tracking is included.
-- Settings are stored locally in the browser.
-- The weather API key is stored locally and is **not** included in exported backups.
-- Uploaded background images and preferences stay in local browser storage.
-- Weather features may call third-party weather or location services when enabled.
-
-## Security Notes
-
-- Password generation uses the Web Crypto API via `crypto.getRandomValues()`.
-- Weather API keys are entered by the user and are never bundled with the project.
-- Some assets load from external CDNs; for a fully offline package, they can be bundled locally.
+The extension page follows Manifest V3's content security policy: no inline scripts or handlers. Buttons use `data-action` attributes that `app.js` routes to the matching function.
 
 ## License
 
-This project is licensed under the **MIT License** — see [`LICENSE`](LICENSE) for details.
+[MIT](LICENSE) © 2026 ByYay
 
-Copyright (c) 2026 ByYay
+Third-party names, logos, fonts, and icons belong to their respective owners and remain subject to their own terms.

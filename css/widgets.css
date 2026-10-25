@@ -1,3 +1,4 @@
+/* Widget container styles */
 .widget-container {
     width: 100%;
     max-width: 680px;
@@ -22,9 +23,14 @@
     z-index: 20;
 }
 
+/* ============================================================
+   LIQUID GLASS TOGGLE — sade, Apple-style
+   ============================================================ */
+
 .widget-toggle {
     position: relative;
     display: flex;
+    /* Mat cam: az opak, güçlü blur */
     background: rgba(255, 255, 255, 0.38);
     backdrop-filter: blur(40px) saturate(180%) brightness(1.04);
     -webkit-backdrop-filter: blur(40px) saturate(180%) brightness(1.04);
@@ -32,7 +38,9 @@
     padding: 5px;
     margin-bottom: 20px;
     justify-content: stretch;
+    /* Hafif kenar: tek ince çizgi */
     border: 1px solid rgba(255, 255, 255, 0.48);
+    /* Gölge: sadece derinlik hissi, yoksa düz kalır */
     box-shadow:
         0 2px 8px  rgba(0, 0, 0, 0.06),
         0 8px 24px rgba(0, 0, 0, 0.05),
@@ -45,6 +53,7 @@
     transition: box-shadow 0.25s ease, background 0.25s ease;
 }
 
+/* Tek üst kenar parlaması — cam hissi */
 .widget-toggle::before {
     content: '';
     position: absolute;
@@ -69,12 +78,14 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.75);
 }
 
+/* ── Kayan pill ── */
 .widget-liquid-indicator {
     position: absolute;
     top: 5px;
     left: 5px;
     width: calc(20% - 8px);
     height: calc(100% - 10px);
+    /* Saf beyaz pill: cam değil, mat yüzey */
     background: rgba(255, 255, 255, 0.92);
     border-radius: 100px;
     transition: transform 0.42s cubic-bezier(0.34, 1.28, 0.54, 1);
@@ -87,6 +98,7 @@
     overflow: hidden;
 }
 
+/* Pill üst parlaması */
 .widget-liquid-indicator::before {
     content: '';
     position: absolute;
@@ -98,7 +110,7 @@
 
 .widget-liquid-indicator::after { display: none; }
 
-.widget-liquid-indicator.calculator-active {
+.widget-liquid-indicator.vocab-active {
     transform: translateX(calc(100% + 6px));
 }
 .widget-liquid-indicator.password-active {
@@ -111,6 +123,7 @@
     transform: translateX(calc(400% + 24px));
 }
 
+/* ── Tab butonları ── */
 .widget-toggle-btn {
     position: relative;
     display: inline-flex;
@@ -164,104 +177,4 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-@media (max-width: 768px) {
-    .widget-container {
-        max-width: 100%;
-        padding: 16px;
-    }
-    
-    .widget-toggle {
-        min-width: 0;
-        width: 100%;
-        height: 50px;
-        padding: 4px;
-        border-radius: 25px;
-    }
-    
-    .widget-toggle-btn {
-        padding: 6px 12px;
-        font-size: 0.74rem;
-        gap: 7px;
-        min-height: 40px;
-    }
-    
-    .widget-toggle-btn i {
-        font-size: 0.9rem;
-        position: static;
-    }
-    
-    .widget-liquid-indicator {
-        border-radius: 20px;
-        top: 4px;
-        left: 4px;
-        width: calc(20% - 7px);
-        height: calc(100% - 8px);
-    }
-    
-    .widget-liquid-indicator.calculator-active {
-        transform: translateX(calc(100% + 4px)) scale(1.02);
-    }
-    
-    .widget-liquid-indicator.password-active {
-        transform: translateX(calc(200% + 8px)) scale(1.02);
-    }
-    
-    .widget-liquid-indicator.weather-active {
-        transform: translateX(calc(300% + 12px)) scale(1.02);
-    }
-    
-    .widget-liquid-indicator.clock-active {
-        transform: translateX(calc(400% + 16px)) scale(1.02);
-    }
-}
-
-@media (max-width: 480px) {
-    .widget-container {
-        max-width: 100%;
-        padding: 12px;
-    }
-    
-    .widget-toggle {
-        min-width: 0;
-        width: 100%;
-        height: 44px;
-        padding: 3px;
-        border-radius: 24px;
-    }
-    
-    .widget-toggle-btn {
-        padding: 5px 8px;
-        font-size: 0.65rem;
-        gap: 4px;
-        min-height: 34px;
-    }
-    
-    .widget-toggle-btn i {
-        font-size: 0.8rem;
-        position: static;
-    }
-    
-    .widget-liquid-indicator {
-        border-radius: 18px;
-        top: 4px;
-        left: 4px;
-        width: calc(20% - 6px);
-        height: calc(100% - 8px);
-    }
-    
-    .widget-liquid-indicator.calculator-active {
-        transform: translateX(calc(100% + 3px)) scale(1.02);
-    }
-    
-    .widget-liquid-indicator.password-active {
-        transform: translateX(calc(200% + 6px)) scale(1.02);
-    }
-    
-    .widget-liquid-indicator.weather-active {
-        transform: translateX(calc(300% + 9px)) scale(1.02);
-    }
-    
-    .widget-liquid-indicator.clock-active {
-        transform: translateX(calc(400% + 12px)) scale(1.02);
-    }
-}
+/* Responsive Design */

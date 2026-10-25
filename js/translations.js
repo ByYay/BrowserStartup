@@ -1,23 +1,30 @@
 const translations = {
     tr: {
+        locale: "tr-TR",
         title: "Hoş Geldin",
-        "page-title": "Hoş Geldin",
+        "welcome-base": "Hoş Geldin",
+        "default-username": "Kullanıcı",
         "search-placeholder": "Google'da ara...",
         "search-button": "Ara",
-        "footer-text": "Odaklan, üretken ol",
         "chatgpt-placeholder": "ChatGPT'ye sorun...",
+        "claude-placeholder": "Claude'a sorun...",
         "chatgpt-button": "Gönder",
+        "ai-toggle-title": "{name} modunu aç/kapat",
+        "fullscreen": "Tam Ekran",
         "calendar-title": "Takvim",
-        "calculator-title": "Hesap",
+        "vocab-title": "Kelimeler",
         "today": "Bugün",
+        "tomorrow": "Yarın",
         "weekend": "Hafta Sonu",
+        "weekdays": ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"],
+        "months": ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
+                   "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"],
         "theme-auto": "Otomatik",
         "theme-light": "Açık",
         "theme-dark": "Koyu",
         "theme-midnight": "Gece",
         "password-title": "Şifre",
         "weather-title": "Hava Durumu",
-        "clock-title": "Saat",
         "pomodoro-title": "Pomodoro",
         "pomodoro-work-phase": "Çalışma",
         "pomodoro-break-phase": "Mola",
@@ -35,68 +42,129 @@ const translations = {
         "pomodoro-paused": "Zamanlayıcı duraklatıldı",
         "pomodoro-work-started": "Mola bitti, tekrar çalışma zamanı",
         "pomodoro-break-started": "Çalışma tamamlandı, kısa mola zamanı",
-        "digital-mode": "Dijital",
-        "analog-mode": "Analog",
+        "minutes-short": "dk",
+        "vocab-heading": "Kelime Defteri",
+        "vocab-count": "{count} kelime",
+        "vocab-count-one": "1 kelime",
+        "vocab-manage": "Ekle / Düzenle",
+        "vocab-show-cards": "Kartlar",
+        "vocab-empty": "Kelime defterin henüz boş.",
+        "vocab-add-first": "İlk kelimeni ekle",
+        "vocab-tap-hint": "Anlamını görmek için tıkla",
+        "vocab-next-hint": "Sonraki kelime için tıkla",
+        "vocab-no-meaning": "Anlam girilmemiş",
+        "vocab-word-label": "İngilizce kelime",
+        "vocab-word-placeholder": "ör. resilient",
+        "vocab-meaning-label": "Türkçe anlamı",
+        "vocab-meaning-placeholder": "Otomatik çevrilir veya elle yaz",
+        "vocab-translate": "Chrome ile çevir",
+        "vocab-add": "Ekle",
+        "vocab-edit": "Düzenle",
+        "vocab-list-empty": "Henüz kelime yok. Yukarıya İngilizce bir kelime yaz.",
+        "vocab-word-required": "Önce İngilizce kelimeyi yaz.",
+        "vocab-duplicate": "\"{word}\" zaten defterde.",
+        "vocab-added": "\"{word}\" eklendi.",
+        "vocab-updated": "\"{word}\" güncellendi.",
+        "vocab-editing": "\"{word}\" düzenleniyor",
+        "vocab-translating": "Çevriliyor...",
+        "vocab-translated": "Chrome çevirisi; istersen düzelt.",
+        "vocab-downloading": "Dil paketi indiriliyor: %{percent}",
+        "vocab-translate-failed": "Otomatik çeviri yapılamadı; çevir butonuna bas veya anlamı elle yaz.",
+        "vocab-translate-unsupported": "Bu tarayıcıda otomatik çeviri yok; anlamı elle yaz.",
+        "password-placeholder": "Oluşturulan şifre burada görünecek...",
+        "copy-to-clipboard": "Panoya kopyala",
         "password-length": "Uzunluk:",
         "include-numbers": "Rakamlar (0-9)",
         "include-uppercase": "Büyük Harfler (A-Z)",
         "include-lowercase": "Küçük Harfler (a-z)",
         "include-special": "Özel Karakterler (!@#$%^&*)",
-        "exclude-similar": "Benzer Karakterleri Hariç Tut (0, O, l, I)",
+        "exclude-similar": "Benzer Karakterleri Hariç Tut (0, O, 1, l, I)",
         "generate-password": "Şifre Oluştur",
-        "strength-weak": "Zayıf",
+        "strength-levels": ["Çok Zayıf", "Çok Zayıf", "Zayıf", "Zayıf", "Orta", "Orta",
+                            "İyi", "İyi", "Güçlü", "Güçlü", "Çok Güçlü"],
         "edit-shortcut": "Kısayolu Düzenle",
         "add-shortcut": "Yeni Kısayol Ekle",
         "delete-shortcut": "Kısayolu Sil",
         "edit-shortcut-title": "Kısayolu Düzenle",
         "shortcut-name": "İsim:",
         "shortcut-url": "URL:",
-        "shortcut-icon": "İkon (Font Awesome sınıfı):",
+        "shortcut-icon": "İkon:",
         "shortcut-color": "Renk Sınıfı:",
-        "icon-help": "img:URL , img:file://C:\\PATH veya Font Awesome sınıfından ikon ekleyebilirsiniz",
+        "icon-help": "Font Awesome sınıfı (ör. fas fa-globe), img:URL ya da \"Dosya seç\" ile bilgisayarından JPG, PNG veya WEBP görsel",
+        "choose-file": "Dosya seç",
+        "choose-icon-file": "Bilgisayardan ikon görseli seç (JPG, PNG, WEBP)",
+        "icon-file-invalid": "Lütfen JPG, PNG veya WEBP dosyası seçin.",
+        "icon-file-error": "Görsel okunamadı. Başka bir dosya deneyin.",
         "cancel": "İptal",
         "save": "Kaydet",
+        "delete": "Sil",
+        "close": "Kapat",
         "confirm-delete": "silmek istediğinizden emin misiniz?",
         "fill-required-fields": "Lütfen tüm gerekli alanları doldurunuz.",
         "invalid-url": "Lütfen http:// veya https:// ile başlayan geçerli bir URL girin.",
         "default-color": "Varsayılan",
         "custom-color": "Özel Renk:",
+        "preview": "Önizleme",
         "feels-like": "Hissedilen",
         "visibility": "Görüş",
         "humidity": "Nem",
         "wind-speed": "Rüzgar",
         "pressure": "Basınç",
-        "refresh": "Yenile",
-        "settings-theme-label": "Tema",
-        "settings-bg-theme-option": "Tema Arka Planı",
-        "settings-bg-upload-option": "Görselleri Yükle",
-        "settings-bg-upload-btn-text": "Görselleri Yükle",
-        "settings-bg-blur-label": "Bulanıklık:",
-        "settings-bg-brightness-label": "Parlaklık:",
-        "settings-bg-contrast-label": "Kontrast:",
-        "settings-bg-images-label": "Görseller",
-        "settings-bg-rotation-label": "Döngüyü Etkinleştir",
-        "settings-bg-interval-label": "Aralık:",
         "forecast-title": "5 Günlük Tahmin",
         "weather-sunny": "Güneşli",
+        "weather-partly-cloudy": "Parçalı Bulutlu",
         "weather-cloudy": "Bulutlu",
         "weather-rainy": "Yağmurlu",
         "weather-snowy": "Karlı",
         "weather-clear": "Açık",
         "weather-misty": "Sisli",
         "weather-stormy": "Fırtınalı",
+        "weather-unavailable": "Hava durumu alınamadı",
+        "weather-loading": "Yükleniyor...",
         "updated-now": "Şimdi güncellendi",
-        "today": "Bugün",
-        "tomorrow": "Yarın",
+        "updated-at": "Güncellendi: {time}",
         "day-names": {
-            "Mon": "Pzt",
-            "Tue": "Sal", 
-            "Wed": "Çar",
-            "Thu": "Per",
-            "Fri": "Cum",
-            "Sat": "Cmt",
-            "Sun": "Paz"
+            "Mon": "Pzt", "Tue": "Sal", "Wed": "Çar", "Thu": "Per",
+            "Fri": "Cum", "Sat": "Cmt", "Sun": "Paz"
         },
+        "settings-button": "Ayarlar",
+        "settings-title": "Ayarlar",
+        "settings-username-label": "Kullanıcı Adı",
+        "settings-language-label": "Dil / Language",
+        "settings-ai-label": "Arama Yapay Zekâsı",
+        "settings-theme-label": "Tema",
+        "settings-background-label": "Arka Plan",
+        "settings-bg-theme-option": "Tema Arka Planı",
+        "settings-bg-upload-option": "Görsel Yükle",
+        "settings-bg-upload-btn-text": "Görsel Yükle",
+        "settings-bg-blur-label": "Bulanıklık:",
+        "settings-bg-brightness-label": "Parlaklık:",
+        "settings-bg-contrast-label": "Kontrast:",
+        "settings-bg-images-label": "Görseller",
+        "settings-bg-rotation-label": "Döngüyü Etkinleştir",
+        "settings-bg-interval-label": "Aralık:",
+        "settings-pomodoro-label": "Pomodoro",
+        "settings-pomodoro-work-label": "Çalışma Süresi (dakika)",
+        "settings-pomodoro-break-label": "Mola Süresi (dakika)",
+        "settings-weather-label": "Hava Durumu API Anahtarı",
+        "settings-weather-placeholder": "WeatherAPI.com API anahtarı",
+        "settings-weather-info": "weatherapi.com adresinden ücretsiz alabilirsiniz. Boş bırakılırsa Open-Meteo kullanılır.",
+        "settings-shortcuts-label": "Kısayollar",
+        "settings-data-label": "Veri Yönetimi",
+        "settings-export": "Dışa Aktar (.yay)",
+        "settings-import": "İçe Aktar (.yay)",
+        "settings-reset": "Varsayılan Ayarlara Döndür",
+        "username-saved": "Kullanıcı adı kaydedildi!",
+        "apikey-saved": "API anahtarı kaydedildi!",
+        "apikey-cleared": "API anahtarı temizlendi.",
+        "pomodoro-work-invalid": "Çalışma süresi 1-180 arasında olmalı.",
+        "pomodoro-break-invalid": "Mola süresi 1-120 arasında olmalı.",
+        "pomodoro-saved": "Pomodoro süreleri kaydedildi!",
+        "reset-confirm": "Tüm ayarlar varsayılana döndürülsün mü? Kısayollar, kullanıcı adı, tema, API anahtarı, kelime defteri ve arka plan ayarları sıfırlanacak.",
+        "images-only": "Lütfen sadece görsel dosyası seçiniz!",
+        "images-uploaded": "Görseller yüklendi!",
+        "image-upload-error": "Görsel yüklenirken hata oluştu!",
+        "storage-full": "Depolama alanı dolu!",
         greetings: [
             "Tekrar hoş geldin, {name}. Odaklanmaya hazır mısın?",
             "Seni görmek güzel, {name}. Bugün üretken olalım.",
@@ -121,24 +189,31 @@ const translations = {
         ]
     },
     en: {
+        locale: "en-US",
         title: "Welcome",
-        "page-title": "Welcome",
+        "welcome-base": "Welcome",
+        "default-username": "User",
         "search-placeholder": "Search Google...",
         "search-button": "Search",
-        "footer-text": "Stay focused, stay productive",
         "chatgpt-placeholder": "Ask ChatGPT...",
+        "claude-placeholder": "Ask Claude...",
         "chatgpt-button": "Send",
+        "ai-toggle-title": "Toggle {name} mode",
+        "fullscreen": "Fullscreen",
         "calendar-title": "Calendar",
-        "calculator-title": "Calculator",
+        "vocab-title": "Words",
         "today": "Today",
+        "tomorrow": "Tomorrow",
         "weekend": "Weekend",
+        "weekdays": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        "months": ["January", "February", "March", "April", "May", "June",
+                   "July", "August", "September", "October", "November", "December"],
         "theme-auto": "Auto",
         "theme-light": "Light",
         "theme-dark": "Dark",
         "theme-midnight": "Midnight",
         "password-title": "Password",
         "weather-title": "Weather",
-        "clock-title": "Clock",
         "pomodoro-title": "Pomodoro",
         "pomodoro-work-phase": "Work",
         "pomodoro-break-phase": "Break",
@@ -156,39 +231,98 @@ const translations = {
         "pomodoro-paused": "Timer paused",
         "pomodoro-work-started": "Break ended, back to work",
         "pomodoro-break-started": "Work complete, take a break",
-        "digital-mode": "Digital",
-        "analog-mode": "Analog",
+        "minutes-short": "min",
+        "vocab-heading": "Vocabulary",
+        "vocab-count": "{count} words",
+        "vocab-count-one": "1 word",
+        "vocab-manage": "Add / Edit",
+        "vocab-show-cards": "Cards",
+        "vocab-empty": "Your vocabulary is empty.",
+        "vocab-add-first": "Add your first word",
+        "vocab-tap-hint": "Click to reveal the meaning",
+        "vocab-next-hint": "Click for the next word",
+        "vocab-no-meaning": "No meaning entered",
+        "vocab-word-label": "English word",
+        "vocab-word-placeholder": "e.g. resilient",
+        "vocab-meaning-label": "Turkish meaning",
+        "vocab-meaning-placeholder": "Auto-translated, or type it yourself",
+        "vocab-translate": "Translate with Chrome",
+        "vocab-add": "Add",
+        "vocab-edit": "Edit",
+        "vocab-list-empty": "No words yet. Type an English word above.",
+        "vocab-word-required": "Type the English word first.",
+        "vocab-duplicate": "\"{word}\" is already in your list.",
+        "vocab-added": "\"{word}\" added.",
+        "vocab-updated": "\"{word}\" updated.",
+        "vocab-editing": "Editing \"{word}\"",
+        "vocab-translating": "Translating...",
+        "vocab-translated": "Chrome translation; edit it if needed.",
+        "vocab-downloading": "Downloading language pack: {percent}%",
+        "vocab-translate-failed": "Auto-translation failed; press the translate button or type the meaning.",
+        "vocab-translate-unsupported": "Auto-translation isn't available in this browser; type the meaning.",
+        "password-placeholder": "Generated password will appear here...",
+        "copy-to-clipboard": "Copy to clipboard",
         "password-length": "Length:",
         "include-numbers": "Include Numbers (0-9)",
         "include-uppercase": "Include Uppercase (A-Z)",
         "include-lowercase": "Include Lowercase (a-z)",
         "include-special": "Include Special (!@#$%^&*)",
-        "exclude-similar": "Exclude Similar (0, O, l, I)",
+        "exclude-similar": "Exclude Similar (0, O, 1, l, I)",
         "generate-password": "Generate Password",
-        "strength-weak": "Weak",
+        "strength-levels": ["Very Weak", "Very Weak", "Weak", "Weak", "Fair", "Fair",
+                            "Good", "Good", "Strong", "Strong", "Very Strong"],
         "edit-shortcut": "Edit Shortcut",
         "add-shortcut": "Add New Shortcut",
         "delete-shortcut": "Delete Shortcut",
         "edit-shortcut-title": "Edit Shortcut",
         "shortcut-name": "Name:",
         "shortcut-url": "URL:",
-        "shortcut-icon": "Icon (Font Awesome class):",
+        "shortcut-icon": "Icon:",
         "shortcut-color": "Color Class:",
-        "icon-help": "img:URL , img:file://C:\\PATH or Font Awesome class name",
+        "icon-help": "Font Awesome class (e.g. fas fa-globe), img:URL, or a JPG, PNG or WEBP image from your computer via \"Choose file\"",
+        "choose-file": "Choose file",
+        "choose-icon-file": "Choose an icon image from your computer (JPG, PNG, WEBP)",
+        "icon-file-invalid": "Please choose a JPG, PNG or WEBP file.",
+        "icon-file-error": "The image couldn't be read. Try another file.",
         "cancel": "Cancel",
         "save": "Save",
+        "delete": "Delete",
+        "close": "Close",
         "confirm-delete": "Are you sure you want to delete",
         "fill-required-fields": "Please fill in all required fields.",
         "invalid-url": "Please enter a valid URL starting with http:// or https://",
         "default-color": "Default",
         "custom-color": "Custom Color:",
+        "preview": "Preview",
         "feels-like": "Feels like",
         "visibility": "Visibility",
         "humidity": "Humidity",
         "wind-speed": "Wind",
         "pressure": "Pressure",
-        "refresh": "Refresh",
+        "forecast-title": "5-Day Forecast",
+        "weather-sunny": "Sunny",
+        "weather-partly-cloudy": "Partly Cloudy",
+        "weather-cloudy": "Cloudy",
+        "weather-rainy": "Rainy",
+        "weather-snowy": "Snowy",
+        "weather-clear": "Clear",
+        "weather-misty": "Misty",
+        "weather-stormy": "Stormy",
+        "weather-unavailable": "Weather unavailable",
+        "weather-loading": "Loading...",
+        "updated-now": "Updated now",
+        "updated-at": "Updated: {time}",
+        "day-names": {
+            "Mon": "Mon", "Tue": "Tue", "Wed": "Wed", "Thu": "Thu",
+            "Fri": "Fri", "Sat": "Sat", "Sun": "Sun"
+        },
+        "settings-button": "Settings",
+        "settings-title": "Settings",
+        "settings-username-label": "Username",
+        "settings-language-label": "Language / Dil",
+        "settings-ai-label": "Search AI",
         "settings-theme-label": "Theme",
+        "settings-background-label": "Background",
         "settings-bg-theme-option": "Theme Background",
         "settings-bg-upload-option": "Upload Images",
         "settings-bg-upload-btn-text": "Upload Images",
@@ -198,26 +332,28 @@ const translations = {
         "settings-bg-images-label": "Images",
         "settings-bg-rotation-label": "Enable Rotation",
         "settings-bg-interval-label": "Interval:",
-        "forecast-title": "5-Day Forecast",
-        "weather-sunny": "Sunny",
-        "weather-cloudy": "Cloudy",
-        "weather-rainy": "Rainy",
-        "weather-snowy": "Snowy",
-        "weather-clear": "Clear",
-        "weather-misty": "Misty",
-        "weather-stormy": "Stormy",
-        "updated-now": "Updated now",
-        "today": "Today",
-        "tomorrow": "Tomorrow",
-        "day-names": {
-            "Mon": "Mon",
-            "Tue": "Tue", 
-            "Wed": "Wed",
-            "Thu": "Thu",
-            "Fri": "Fri",
-            "Sat": "Sat",
-            "Sun": "Sun"
-        },
+        "settings-pomodoro-label": "Pomodoro",
+        "settings-pomodoro-work-label": "Work Duration (minutes)",
+        "settings-pomodoro-break-label": "Break Duration (minutes)",
+        "settings-weather-label": "Weather API Key",
+        "settings-weather-placeholder": "WeatherAPI.com API key",
+        "settings-weather-info": "Get a free key at weatherapi.com. If left empty, Open-Meteo is used.",
+        "settings-shortcuts-label": "Shortcuts",
+        "settings-data-label": "Data Management",
+        "settings-export": "Export (.yay)",
+        "settings-import": "Import (.yay)",
+        "settings-reset": "Reset to Defaults",
+        "username-saved": "Username saved!",
+        "apikey-saved": "API key saved!",
+        "apikey-cleared": "API key cleared.",
+        "pomodoro-work-invalid": "Work duration must be between 1-180.",
+        "pomodoro-break-invalid": "Break duration must be between 1-120.",
+        "pomodoro-saved": "Pomodoro durations saved!",
+        "reset-confirm": "Reset all settings to defaults? Shortcuts, username, theme, API key, vocabulary, and background settings will be reset.",
+        "images-only": "Please select only image files!",
+        "images-uploaded": "Images uploaded!",
+        "image-upload-error": "Error uploading image!",
+        "storage-full": "Storage space exceeded!",
         greetings: [
             "Welcome back, {name}. Ready to focus?",
             "Good to see you, {name}. Let's be productive today.",
@@ -243,80 +379,65 @@ const translations = {
     }
 };
 
-let currentLanguage = localStorage.getItem('language') || 'en';
+let currentLanguage = localStorage.getItem('language');
+if (!Object.hasOwn(translations, currentLanguage || '')) {
+    currentLanguage = 'en';
+}
 
 function getCurrentLanguage() {
     return currentLanguage;
 }
 
-function toggleLanguage() {
-    currentLanguage = currentLanguage === 'en' ? 'tr' : 'en';
-    localStorage.setItem('language', currentLanguage);
-    updateLanguage();
-    updateLanguageToggleUI();
-    updateDateTime();
+// Tek çeviri noktası: önce aktif dil, sonra İngilizce, en son anahtarın kendisi.
+// {name} gibi yer tutucular vars nesnesinden doldurulur.
+function t(key, vars) {
+    let value = translations[currentLanguage][key];
+    if (value === undefined) value = translations.en[key];
+    if (value === undefined) return key;
+    if (vars && typeof value === 'string') {
+        value = value.replace(/\{(\w+)\}/g, (match, name) => (name in vars ? vars[name] : match));
+    }
+    return value;
 }
 
-function updateLanguageToggleUI() {
-    const liquidIndicator = document.getElementById('languageLiquidIndicator');
-    const trLabel = document.getElementById('tr-label');
-    const enLabel = document.getElementById('en-label');
-    
-    if (!liquidIndicator || !trLabel || !enLabel) return;
-    
-    if (currentLanguage === 'tr') {
-        liquidIndicator.classList.remove('english-active');
-        trLabel.classList.remove('inactive');
-        trLabel.classList.add('active');
-        enLabel.classList.add('inactive');
-        enLabel.classList.remove('active');
-    } else {
-        liquidIndicator.classList.add('english-active');
-        trLabel.classList.add('inactive');
-        trLabel.classList.remove('active');
-        enLabel.classList.remove('inactive');
-        enLabel.classList.add('active');
-    }
+function setLanguage(lang) {
+    if (!Object.hasOwn(translations, lang) || lang === currentLanguage) return;
+    currentLanguage = lang;
+    localStorage.setItem('language', currentLanguage);
+    updateLanguage();
+}
+
+// Statik metinler: data-tr → textContent, data-tr-placeholder → placeholder,
+// data-tr-title → title + aria-label. İkon içeren öğelerde metin ayrı bir
+// <span data-tr> içinde durur, böylece ikonlar silinmez.
+function applyStaticTranslations() {
+    document.documentElement.lang = currentLanguage;
+
+    document.querySelectorAll('[data-tr]').forEach(el => {
+        const value = t(el.dataset.tr);
+        if (typeof value === 'string') el.textContent = value;
+    });
+    document.querySelectorAll('[data-tr-placeholder]').forEach(el => {
+        el.placeholder = t(el.dataset.trPlaceholder);
+    });
+    document.querySelectorAll('[data-tr-title]').forEach(el => {
+        el.title = t(el.dataset.trTitle);
+        el.setAttribute('aria-label', el.title);
+    });
 }
 
 function updateLanguage() {
-    const elements = document.querySelectorAll('[data-tr]');
-    elements.forEach(element => {
-        const key = element.getAttribute('data-tr');
-        if (translations[currentLanguage][key]) {
-            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                element.placeholder = translations[currentLanguage][key];
-            } else {
-                element.textContent = translations[currentLanguage][key];
-            }
-        }
-    });
-    
-    document.title = translations[currentLanguage]['page-title'];
-    
+    applyStaticTranslations();
     setGreeting();
     updateChatGPTUI();
-    
     generateCalendar();
-    
-    if (typeof updateWeatherDisplay === 'function') {
-        updateWeatherDisplay();
-    }
-    
-    if (typeof updateThemeToggleUI === 'function') {
-        updateThemeToggleUI();
-    }
-    
-    if (typeof updatePasswordStrengthText === 'function') {
-        updatePasswordStrengthText();
+    updateDateTime();
+
+    if (typeof updateWeatherDisplay === 'function') updateWeatherDisplay();
+    if (typeof updatePasswordStrengthText === 'function') updatePasswordStrengthText();
+    if (typeof loadSettingsValues === 'function' && typeof settingsOpen !== 'undefined' && settingsOpen) {
+        loadSettingsValues();
     }
 
-    if (typeof updateSettingsTranslations === 'function') {
-        updateSettingsTranslations();
-    }
-
-    const settingsBtn = document.querySelector('.settings-toggle span');
-    if (settingsBtn) {
-        settingsBtn.textContent = currentLanguage === 'tr' ? 'Ayarlar' : 'Settings';
-    }
+    document.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: currentLanguage } }));
 }

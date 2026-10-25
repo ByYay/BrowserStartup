@@ -1,59 +1,63 @@
-let currentWidget = localStorage.getItem('current-widget') || 'calendar';
+const WIDGETS = ['calendar', 'vocab', 'password', 'weather', 'clock'];
+
+let currentWidget = localStorage.getItem('current-widget');
+if (!WIDGETS.includes(currentWidget)) {
+    currentWidget = 'calendar';
+}
 
 function showWidget(widgetType) {
-    document.querySelectorAll('.widget-content').forEach(widget => {
-        widget.classList.remove('active');
+    if (!WIDGETS.includes(widgetType)) return;
+
+    WIDGETS.forEach(name => {
+        const isActive = name === widgetType;
+        document.getElementById(`${name}Widget`).classList.toggle('active', isActive);
+        const toggle = document.getElementById(`${name}Toggle`);
+        toggle.classList.toggle('active', isActive);
+        toggle.setAttribute('aria-selected', String(isActive));
+        toggle.tabIndex = isActive ? 0 : -1;
     });
-    
-    document.querySelectorAll('.widget-toggle-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
+
     const liquidIndicator = document.getElementById('liquidIndicator');
-    
-    if (widgetType === 'calendar') {
-        document.getElementById('calendarWidget').classList.add('active');
-        document.getElementById('calendarToggle').classList.add('active');
-        liquidIndicator.classList.remove('calculator-active', 'password-active', 'weather-active', 'clock-active');
-        generateCalendar();
-    } else if (widgetType === 'calculator') {
-        document.getElementById('calculatorWidget').classList.add('active');
-        document.getElementById('calculatorToggle').classList.add('active');
-        liquidIndicator.classList.remove('password-active', 'weather-active', 'clock-active');
-        liquidIndicator.classList.add('calculator-active');
-        updateCalculatorDisplay();
-    } else if (widgetType === 'password') {
-        document.getElementById('passwordWidget').classList.add('active');
-        document.getElementById('passwordToggle').classList.add('active');
-        liquidIndicator.classList.remove('calculator-active', 'weather-active', 'clock-active');
-        liquidIndicator.classList.add('password-active');
-        if (typeof generatePassword === 'function') {
-            generatePassword();
-        }
-    } else if (widgetType === 'weather') {
-        document.getElementById('weatherWidget').classList.add('active');
-        document.getElementById('weatherToggle').classList.add('active');
-        liquidIndicator.classList.remove('calculator-active', 'password-active', 'clock-active');
-        liquidIndicator.classList.add('weather-active');
-        if (typeof initWeatherWidget === 'function') {
-            initWeatherWidget();
-        }
-    } else if (widgetType === 'clock') {
-        document.getElementById('clockWidget').classList.add('active');
-        document.getElementById('clockToggle').classList.add('active');
-        liquidIndicator.classList.remove('calculator-active', 'password-active', 'weather-active');
-        liquidIndicator.classList.add('clock-active');
-        
-        if (typeof clockWidget !== 'undefined') {
-            clockWidget.init();
-        }
+    WIDGETS.forEach(name => liquidIndicator.classList.remove(`${name}-active`));
+    if (widgetType !== 'calendar') {
+        liquidIndicator.classList.add(`${widgetType}-active`);
     }
-    
+
+    if (widgetType === 'calendar') {
+        generateCalendar();
+    } else if (widgetType === 'vocab') {
+        renderVocab();
+    } else if (widgetType === 'password') {
+        if (!document.getElementById('passwordOutput').value) generatePassword();
+    } else if (widgetType === 'weather') {
+        initWeatherWidget();
+    } else if (widgetType === 'clock') {
+        clockWidget.render();
+    }
+
     currentWidget = widgetType;
     localStorage.setItem('current-widget', currentWidget);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const savedWidget = localStorage.getItem('current-widget') || 'calendar';
-    showWidget(savedWidget);
-});
+// Sekme listesinde ok tuşlarıyla gezinme (WAI-ARIA tabs deseni)
+function handleWidgetTabKeys(event) {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    const tab = event.target.closest('.widget-toggle-btn');
+    if (!tab) return;
+
+    event.preventDefault();
+    const index = WIDGETS.indexOf(currentWidget);
+    let next = index;
+    if (event.key === 'ArrowLeft') next = (index - 1 + WIDGETS.length) % WIDGETS.length;
+    if (event.key === 'ArrowRight') next = (index + 1) % WIDGETS.length;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = WIDGETS.length - 1;
+
+    showWidget(WIDGETS[next]);
+    document.getElementById(`${WIDGETS[next]}Toggle`).focus();
+}
+
+function initWidgets() {
+    document.querySelector('.widget-toggle').addEventListener('keydown', handleWidgetTabKeys);
+    showWidget(currentWidget);
+}

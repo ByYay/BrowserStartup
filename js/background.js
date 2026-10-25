@@ -1,5 +1,7 @@
+// ==================== BACKGROUND MANAGEMENT MODULE ====================
+
 const backgroundConfig = {
-    backgroundType: 'theme',
+    backgroundType: 'theme', // 'theme' or 'upload'
     themeBackground: 'general',
     selectedImages: [],
     currentImageIndex: 0,
@@ -7,30 +9,64 @@ const backgroundConfig = {
     brightness: 100,
     contrast: 100,
     rotationEnabled: false,
-    rotationInterval: 5,
+    rotationInterval: 5, // saniye
     rotationTimer: null
 };
 
+let backgroundDBPromise = null;
+
 function loadBackgroundConfig() {
     const saved = localStorage.getItem('backgroundConfig');
-    if (saved) {
-        try {
-            const config = JSON.parse(saved);
-            Object.assign(backgroundConfig, config);
-        } catch (e) {
-            console.error('Error loading background config:', e);
-        }
+    if (!saved) return;
+    try {
+        const config = JSON.parse(saved);
+        delete config.rotationTimer;
+        Object.assign(backgroundConfig, config);
+        if (!Array.isArray(backgroundConfig.selectedImages)) backgroundConfig.selectedImages = [];
+    } catch (e) {
+        console.error('Error loading background config:', e);
     }
 }
 
 function saveBackgroundConfig() {
-    localStorage.setItem('backgroundConfig', JSON.stringify(backgroundConfig));
+    const { rotationTimer, ...persisted } = backgroundConfig;
+    localStorage.setItem('backgroundConfig', JSON.stringify(persisted));
 }
 
-function getThemeBackgrounds() {
-    return {
-        'general': { name: 'General', value: 'default' }
-    };
+// IndexedDB bağlantısı bir kez açılır ve yeniden kullanılır
+function openBackgroundDB() {
+    if (!backgroundDBPromise) {
+        backgroundDBPromise = new Promise((resolve, reject) => {
+            const request = indexedDB.open('BrowserStartupDB', 1);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains('backgrounds')) {
+                    db.createObjectStore('backgrounds', { keyPath: 'fileName' });
+                }
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => {
+                backgroundDBPromise = null;
+                reject(request.error);
+            };
+        });
+    }
+    return backgroundDBPromise;
+}
+
+function promisifyRequest(request) {
+    return new Promise((resolve, reject) => {
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+function promisifyTransaction(tx) {
+    return new Promise((resolve, reject) => {
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
+    });
 }
 
 async function uploadBackgroundImage() {
@@ -38,46 +74,37 @@ async function uploadBackgroundImage() {
     fileInput.type = 'file';
     fileInput.accept = 'image/*';
     fileInput.multiple = true;
-    
+
     fileInput.onchange = async function(e) {
         const files = e.target.files;
         if (!files || files.length === 0) return;
-        
+
         try {
-            for (let file of files) {
+            for (const file of files) {
                 if (!file.type.startsWith('image/')) {
-                    alert(currentLanguage === 'tr' 
-                        ? 'Lütfen sadece görsel dosyası seçiniz!' 
-                        : 'Please select only image files!');
+                    alert(t('images-only'));
                     continue;
                 }
-                
+
                 const base64 = await fileToBase64(file);
-                
                 await storeBackgroundImage(file.name, base64);
-                
+
                 if (!backgroundConfig.selectedImages.includes(file.name)) {
                     backgroundConfig.selectedImages.push(file.name);
                 }
             }
-            
+
             backgroundConfig.backgroundType = 'upload';
             saveBackgroundConfig();
             updateBackgroundDisplay();
             refreshBackgroundList();
-            
-            showSettingsFeedback('background-feedback',
-                currentLanguage === 'tr'
-                    ? 'Görseller yüklendi!'
-                    : 'Images uploaded!');
+            showSettingsFeedback('background-feedback', t('images-uploaded'));
         } catch (error) {
             console.error('Error uploading background:', error);
-            alert(currentLanguage === 'tr'
-                ? 'Görsel yüklenirken hata oluştu!'
-                : 'Error uploading image!');
+            alert(t('image-upload-error'));
         }
     };
-    
+
     fileInput.click();
 }
 
@@ -90,93 +117,45 @@ function fileToBase64(file) {
     });
 }
 
+// Görseli IndexedDB'ye yazar; IndexedDB yoksa localStorage'a düşer
 async function storeBackgroundImage(fileName, base64Data) {
     try {
-        if (typeof indexedDB !== 'undefined') {
-            const db = await openBackgroundDB();
-            const tx = db.transaction('backgrounds', 'readwrite');
-            const store = tx.objectStore('backgrounds');
-            await store.put({ fileName, base64Data, timestamp: Date.now() });
-            return;
-        }
+        const db = await openBackgroundDB();
+        const tx = db.transaction('backgrounds', 'readwrite');
+        tx.objectStore('backgrounds').put({ fileName, base64Data, timestamp: Date.now() });
+        await promisifyTransaction(tx);
+        return;
     } catch (e) {
         console.warn('IndexedDB not available, using localStorage:', e);
     }
-    
+
     try {
         localStorage.setItem(`bg_${fileName}`, base64Data);
     } catch (e) {
         console.error('Storage quota exceeded:', e);
-        alert(currentLanguage === 'tr'
-            ? 'Depolama alanı dolu!'
-            : 'Storage space exceeded!');
+        alert(t('storage-full'));
     }
-}
-
-function openBackgroundDB() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open('BrowserStartupDB', 1);
-        
-        request.onupgradeneeded = (e) => {
-            const db = e.target.result;
-            if (!db.objectStoreNames.contains('backgrounds')) {
-                db.createObjectStore('backgrounds', { keyPath: 'fileName' });
-            }
-        };
-        
-        request.onsuccess = () => resolve(request.result);
-        request.onerror = () => reject(request.error);
-    });
 }
 
 async function getBackgroundImage(fileName) {
     try {
         const db = await openBackgroundDB();
-        const tx = db.transaction('backgrounds', 'readonly');
-        const store = tx.objectStore('backgrounds');
-        const request = store.get(fileName);
-        
-        return new Promise((resolve) => {
-            request.onsuccess = () => {
-                if (request.result) {
-                    resolve(request.result.base64Data);
-                } else {
-                    resolve(localStorage.getItem(`bg_${fileName}`));
-                }
-            };
-            request.onerror = () => {
-                resolve(localStorage.getItem(`bg_${fileName}`));
-            };
-        });
+        const result = await promisifyRequest(db.transaction('backgrounds', 'readonly').objectStore('backgrounds').get(fileName));
+        if (result) return result.base64Data;
     } catch (e) {
-        return localStorage.getItem(`bg_${fileName}`);
+        // localStorage yedeğine düş
     }
+    return localStorage.getItem(`bg_${fileName}`);
 }
 
 async function getAllStoredBackgrounds() {
-    const images = [];
-    
+    const legacy = Object.keys(localStorage).filter(k => k.startsWith('bg_')).map(k => k.slice(3));
     try {
         const db = await openBackgroundDB();
-        const tx = db.transaction('backgrounds', 'readonly');
-        const store = tx.objectStore('backgrounds');
-        const request = store.getAll();
-        
-        return new Promise((resolve) => {
-            request.onsuccess = () => {
-                const items = request.result;
-                resolveWithItems(items);
-            };
-            
-            function resolveWithItems(items) {
-                resolve(items.map(item => item.fileName));
-            }
-        });
+        const keys = await promisifyRequest(db.transaction('backgrounds', 'readonly').objectStore('backgrounds').getAllKeys());
+        return [...new Set([...keys, ...legacy])];
     } catch (e) {
-        const keys = Object.keys(localStorage);
-        return keys
-            .filter(k => k.startsWith('bg_'))
-            .map(k => k.replace('bg_', ''));
+        return legacy;
     }
 }
 
@@ -184,53 +163,23 @@ async function deleteBackgroundImage(fileName) {
     try {
         const db = await openBackgroundDB();
         const tx = db.transaction('backgrounds', 'readwrite');
-        const store = tx.objectStore('backgrounds');
-        store.delete(fileName);
+        tx.objectStore('backgrounds').delete(fileName);
+        await promisifyTransaction(tx);
     } catch (e) {
-        console.log('Trying localStorage deletion');
+        // localStorage'dan silmeye devam et
     }
-    
     localStorage.removeItem(`bg_${fileName}`);
-    
+
     backgroundConfig.selectedImages = backgroundConfig.selectedImages.filter(f => f !== fileName);
-    
+    backgroundConfig.currentImageIndex = 0;
     if (backgroundConfig.selectedImages.length === 0) {
         backgroundConfig.backgroundType = 'theme';
         stopBackgroundRotation();
     }
-    
-    saveBackgroundConfig();
-    updateBackgroundDisplay();
-    refreshBackgroundList();
-    checkAndDisableRotationIfNeeded();
-}
 
-function toggleThemeBackground(themeName) {
-    backgroundConfig.backgroundType = 'theme';
-    backgroundConfig.themeBackground = themeName;
-    backgroundConfig.selectedImages = [];
-    stopBackgroundRotation();
-    
-    const imageOverlay = document.getElementById('imageBackgroundOverlay');
-    if (imageOverlay) {
-        imageOverlay.remove();
-    }
-    
     saveBackgroundConfig();
     updateBackgroundDisplay();
-    
-    const themeButtons = document.querySelectorAll('.theme-bg-btn');
-    themeButtons.forEach(btn => btn.classList.remove('active'));
-    
-    const selectedBtn = Array.from(themeButtons).find(btn => btn.getAttribute('data-theme') === themeName);
-    if (selectedBtn) selectedBtn.classList.add('active');
-    
     refreshBackgroundList();
-    
-    showSettingsFeedback('background-feedback',
-        currentLanguage === 'tr'
-            ? 'Tema seçildi!'
-            : 'Theme selected!');
 }
 
 function toggleBackgroundImage(fileName) {
@@ -240,141 +189,114 @@ function toggleBackgroundImage(fileName) {
     } else {
         backgroundConfig.selectedImages.push(fileName);
     }
-    
-    if (backgroundConfig.selectedImages.length > 0) {
-        backgroundConfig.backgroundType = 'upload';
-        backgroundConfig.currentImageIndex = 0;
-    } else {
-        backgroundConfig.backgroundType = 'theme';
-    }
-    
+
+    backgroundConfig.currentImageIndex = 0;
+    backgroundConfig.backgroundType = backgroundConfig.selectedImages.length > 0 ? 'upload' : 'theme';
+
     saveBackgroundConfig();
     updateBackgroundDisplay();
     refreshBackgroundList();
-    checkAndDisableRotationIfNeeded();
+}
+
+function getBackgroundFilterValue() {
+    return `blur(${backgroundConfig.blur}px) brightness(${backgroundConfig.brightness}%) contrast(${backgroundConfig.contrast}%)`;
+}
+
+function removeImageOverlay() {
+    const imageOverlay = document.getElementById('imageBackgroundOverlay');
+    if (imageOverlay) imageOverlay.remove();
 }
 
 async function updateBackgroundDisplay() {
     const body = document.body;
-    
     body.classList.remove('custom-background', 'image-background');
-    
     body.style.backgroundImage = 'none';
     body.style.filter = '';
-    
-    if (backgroundConfig.backgroundType === 'theme') {
+
+    const useImage = backgroundConfig.backgroundType === 'upload' && backgroundConfig.selectedImages.length > 0;
+    if (!useImage) {
         body.style.backgroundColor = '';
-        const imageOverlay = document.getElementById('imageBackgroundOverlay');
-        if (imageOverlay) {
-            imageOverlay.remove();
-        }
-    } else if (backgroundConfig.backgroundType === 'upload' && backgroundConfig.selectedImages.length > 0) {
-        body.style.backgroundColor = '#000';
-        const fileName = backgroundConfig.selectedImages[backgroundConfig.currentImageIndex];
-        const base64 = await getBackgroundImage(fileName);
-        
-        if (base64) {
-            body.classList.add('image-background');
-            
-            const filterValue = `blur(${backgroundConfig.blur}px) brightness(${backgroundConfig.brightness}%) contrast(${backgroundConfig.contrast}%)`;
-            
-            let imageOverlay = document.getElementById('imageBackgroundOverlay');
-            
-            if (!imageOverlay) {
-                imageOverlay = document.createElement('div');
-                imageOverlay.id = 'imageBackgroundOverlay';
-                imageOverlay.style.cssText = `
-                    position: fixed;
-                    top: -40px;
-                    left: -40px;
-                    width: calc(100% + 80px);
-                    height: calc(100% + 80px);
-                    background-image: url('${base64}');
-                    background-size: cover;
-                    background-position: center;
-                    background-repeat: no-repeat;
-                    background-attachment: fixed;
-                    z-index: -1;
-                    filter: ${filterValue};
-                    opacity: 1;
-                    transition: opacity 0.55s ease-in-out;
-                `;
-                document.body.insertBefore(imageOverlay, document.body.firstChild);
-            } else {
-                imageOverlay.style.backgroundImage = `url('${base64}')`;
-                imageOverlay.style.filter = filterValue;
-            }
-        }
-    }
-}
-
-function setBackgroundBlur(value) {
-    backgroundConfig.blur = Math.max(0, Math.min(60, value));
-    saveBackgroundConfig();
-    updateBackgroundDisplay();
-}
-
-function setBackgroundBrightness(value) {
-    backgroundConfig.brightness = Math.max(0, Math.min(200, value));
-    saveBackgroundConfig();
-    updateBackgroundDisplay();
-}
-
-function setBackgroundContrast(value) {
-    backgroundConfig.contrast = Math.max(0, Math.min(200, value));
-    saveBackgroundConfig();
-    updateBackgroundDisplay();
-}
-
-function startBackgroundRotation() {
-    if (backgroundConfig.selectedImages.length <= 1) {
+        removeImageOverlay();
         return;
     }
 
+    body.style.backgroundColor = '#000';
+    if (backgroundConfig.currentImageIndex >= backgroundConfig.selectedImages.length) {
+        backgroundConfig.currentImageIndex = 0;
+    }
+    const fileName = backgroundConfig.selectedImages[backgroundConfig.currentImageIndex];
+    const base64 = await getBackgroundImage(fileName);
+    if (!base64) return;
+
+    body.classList.add('image-background');
+
+    let imageOverlay = document.getElementById('imageBackgroundOverlay');
+    if (!imageOverlay) {
+        imageOverlay = document.createElement('div');
+        imageOverlay.id = 'imageBackgroundOverlay';
+        imageOverlay.setAttribute('aria-hidden', 'true');
+        document.body.insertBefore(imageOverlay, document.body.firstChild);
+    }
+    imageOverlay.style.backgroundImage = `url("${base64}")`;
+    imageOverlay.style.filter = getBackgroundFilterValue();
+}
+
+// Kaydırıcılar: görseli yeniden okumadan yalnızca filtreyi günceller
+function applyBackgroundFilters() {
+    const imageOverlay = document.getElementById('imageBackgroundOverlay');
+    if (imageOverlay) imageOverlay.style.filter = getBackgroundFilterValue();
+}
+
+function setBackgroundFilter(property, value, min, max) {
+    const number = Number(value);
+    backgroundConfig[property] = Math.max(min, Math.min(max, Number.isFinite(number) ? number : 0));
+    saveBackgroundConfig();
+    applyBackgroundFilters();
+    updateBackgroundSliderLabels();
+}
+
+function setBackgroundBlur(value) {
+    setBackgroundFilter('blur', value, 0, 60);
+}
+
+function setBackgroundBrightness(value) {
+    setBackgroundFilter('brightness', value, 0, 200);
+}
+
+function setBackgroundContrast(value) {
+    setBackgroundFilter('contrast', value, 0, 200);
+}
+
+function startBackgroundRotation() {
+    if (backgroundConfig.selectedImages.length <= 1) return;
+
     clearBackgroundRotationTimer();
-    
     backgroundConfig.rotationEnabled = true;
     saveBackgroundConfig();
-
     backgroundConfig.rotationTimer = setTimeout(rotateBackgroundImage, backgroundConfig.rotationInterval * 1000);
 }
 
 async function rotateBackgroundImage() {
-    if (!backgroundConfig.rotationEnabled || backgroundConfig.selectedImages.length === 0) {
-        return;
-    }
-    
-    if (backgroundConfig.selectedImages.length === 1) {
-        backgroundConfig.currentImageIndex = 0;
-    } else {
-        backgroundConfig.currentImageIndex = (backgroundConfig.currentImageIndex + 1) % backgroundConfig.selectedImages.length;
-    }
-    
+    if (!backgroundConfig.rotationEnabled || backgroundConfig.selectedImages.length === 0) return;
+
+    backgroundConfig.currentImageIndex = (backgroundConfig.currentImageIndex + 1) % backgroundConfig.selectedImages.length;
+
     const imageOverlay = document.getElementById('imageBackgroundOverlay');
-    if (imageOverlay) {
-        imageOverlay.style.opacity = '0';
-    }
-    
+    if (imageOverlay) imageOverlay.style.opacity = '0';
+
     await new Promise(resolve => setTimeout(resolve, 550));
-    
     await updateBackgroundDisplay();
-    
+
     const updatedOverlay = document.getElementById('imageBackgroundOverlay');
-    if (updatedOverlay) {
-        updatedOverlay.style.opacity = '1';
-    }
-    
+    if (updatedOverlay) updatedOverlay.style.opacity = '1';
+
     backgroundConfig.rotationTimer = setTimeout(rotateBackgroundImage, backgroundConfig.rotationInterval * 1000);
 }
 
 function stopBackgroundRotation() {
     clearBackgroundRotationTimer();
-
     const imageOverlay = document.getElementById('imageBackgroundOverlay');
-    if (imageOverlay) {
-        imageOverlay.style.opacity = '1';
-    }
-
+    if (imageOverlay) imageOverlay.style.opacity = '1';
     backgroundConfig.rotationEnabled = false;
     saveBackgroundConfig();
 }
@@ -386,15 +308,11 @@ function clearBackgroundRotationTimer() {
     }
 }
 
+// 1 veya daha az görsel seçiliyse döngüyü kapat
 function checkAndDisableRotationIfNeeded() {
     if (backgroundConfig.selectedImages.length <= 1 && backgroundConfig.rotationEnabled) {
-        backgroundConfig.rotationEnabled = false;
-        saveBackgroundConfig();
         stopBackgroundRotation();
-        const rotationCheckbox = document.getElementById('backgroundRotationEnabled');
-        if (rotationCheckbox) {
-            rotationCheckbox.checked = false;
-        }
+        document.getElementById('backgroundRotationEnabled').checked = false;
     }
 }
 
@@ -402,7 +320,8 @@ function setBackgroundRotationInterval(seconds) {
     const interval = parseInt(seconds, 10);
     backgroundConfig.rotationInterval = Math.max(1, Math.min(60, Number.isNaN(interval) ? 5 : interval));
     saveBackgroundConfig();
-    
+    updateBackgroundSliderLabels();
+
     if (backgroundConfig.rotationEnabled && backgroundConfig.selectedImages.length > 1) {
         clearBackgroundRotationTimer();
         backgroundConfig.rotationTimer = setTimeout(rotateBackgroundImage, backgroundConfig.rotationInterval * 1000);
@@ -411,16 +330,10 @@ function setBackgroundRotationInterval(seconds) {
 
 function handleBackgroundTypeChange(type) {
     backgroundConfig.backgroundType = type;
-    const uploadSection = document.getElementById('uploadBackgroundSection');
-    if (uploadSection) {
-        uploadSection.style.display = type === 'upload' ? 'block' : 'none';
-    }
+    document.getElementById('uploadBackgroundSection').style.display = type === 'upload' ? 'block' : 'none';
     if (type === 'theme') {
         stopBackgroundRotation();
-        const rotationCheckbox = document.getElementById('backgroundRotationEnabled');
-        if (rotationCheckbox) {
-            rotationCheckbox.checked = false;
-        }
+        document.getElementById('backgroundRotationEnabled').checked = false;
     }
     saveBackgroundConfig();
     updateBackgroundDisplay();
@@ -429,7 +342,7 @@ function handleBackgroundTypeChange(type) {
 function handleBackgroundRotationToggle(enabled) {
     backgroundConfig.rotationEnabled = enabled;
     saveBackgroundConfig();
-    
+
     if (enabled && backgroundConfig.selectedImages.length > 1) {
         startBackgroundRotation();
     } else {
@@ -439,146 +352,114 @@ function handleBackgroundRotationToggle(enabled) {
 
 async function initializeBackground() {
     loadBackgroundConfig();
-    
+
     if (backgroundConfig.backgroundType === 'upload' && backgroundConfig.selectedImages.length > 1) {
         backgroundConfig.currentImageIndex = Math.floor(Math.random() * backgroundConfig.selectedImages.length);
     }
-    
+
     await updateBackgroundDisplay();
-    
-    if (backgroundConfig.rotationEnabled && backgroundConfig.selectedImages.length > 0) {
+
+    if (backgroundConfig.rotationEnabled) {
         startBackgroundRotation();
     }
+
+    // Ayarlar panelindeki görsel listesi tıklamaları (dosya adı HTML'e gömülmez)
+    const list = document.getElementById('uploadedBackgroundImages');
+    list.addEventListener('change', (e) => {
+        const item = e.target.closest('.background-item');
+        if (item && e.target.type === 'checkbox') toggleBackgroundImage(item.dataset.fileName);
+    });
+    list.addEventListener('click', (e) => {
+        const button = e.target.closest('.background-delete-btn');
+        if (button) deleteBackgroundImage(button.closest('.background-item').dataset.fileName);
+    });
+}
+
+function createBackgroundListItem(fileName, base64, isSelected) {
+    const item = document.createElement('div');
+    item.className = `background-item ${isSelected ? 'selected' : ''}`;
+    item.dataset.fileName = fileName;
+
+    const preview = document.createElement('label');
+    preview.className = 'background-preview';
+    if (base64) preview.style.backgroundImage = `url("${base64}")`;
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = isSelected;
+    checkbox.setAttribute('aria-label', fileName);
+    preview.appendChild(checkbox);
+
+    const name = document.createElement('div');
+    name.className = 'background-name';
+    name.textContent = fileName;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.type = 'button';
+    deleteButton.className = 'background-delete-btn';
+    deleteButton.title = t('delete');
+    deleteButton.setAttribute('aria-label', `${t('delete')}: ${fileName}`);
+    const icon = document.createElement('i');
+    icon.className = 'fas fa-trash';
+    deleteButton.appendChild(icon);
+
+    item.append(preview, name, deleteButton);
+    return item;
 }
 
 async function refreshBackgroundList() {
     const uploadedContainer = document.getElementById('uploadedBackgroundImages');
-    if (!uploadedContainer) return;
-    
-    uploadedContainer.innerHTML = '';
-    
     const allBackgrounds = await getAllStoredBackgrounds();
-    
-    for (let fileName of allBackgrounds) {
-        const isSelected = backgroundConfig.selectedImages.includes(fileName);
-        const item = document.createElement('div');
-        item.className = `background-item ${isSelected ? 'selected' : ''}`;
-        
-        const base64 = await getBackgroundImage(fileName);
-        
-        item.innerHTML = `
-            <div class="background-preview" style="background-image: url('${base64}');">
-                <input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleBackgroundImage('${fileName}')">
-            </div>
-            <div class="background-name">${fileName}</div>
-            <button class="background-delete-btn" onclick="deleteBackgroundImage('${fileName}')" title="Delete">
-                <i class="fas fa-trash"></i>
-            </button>
-        `;
-        
-        uploadedContainer.appendChild(item);
-    }
-    
-    const rotationControls = document.getElementById('backgroundRotationControls');
-    if (rotationControls) {
-        rotationControls.style.display = backgroundConfig.selectedImages.length > 1 ? 'block' : 'none';
-    }
-    
+
+    const items = await Promise.all(allBackgrounds.map(async fileName => createBackgroundListItem(
+        fileName,
+        await getBackgroundImage(fileName),
+        backgroundConfig.selectedImages.includes(fileName)
+    )));
+    uploadedContainer.replaceChildren(...items);
+
+    document.getElementById('backgroundRotationControls').style.display =
+        backgroundConfig.selectedImages.length > 1 ? 'block' : 'none';
+
     checkAndDisableRotationIfNeeded();
 }
 
+function updateBackgroundSliderLabels() {
+    document.getElementById('blurValue').textContent = backgroundConfig.blur;
+    document.getElementById('brightnessValue').textContent = backgroundConfig.brightness + '%';
+    document.getElementById('contrastValue').textContent = backgroundConfig.contrast + '%';
+    document.getElementById('rotationIntervalValue').textContent = backgroundConfig.rotationInterval + 's';
+}
+
 function loadBackgroundSettingsValues() {
-    const bgTypeRadios = document.querySelectorAll('input[name="backgroundType"]');
-    bgTypeRadios.forEach(radio => {
-        if (radio.value === backgroundConfig.backgroundType) {
-            radio.checked = true;
-        }
+    document.querySelectorAll('input[name="backgroundType"]').forEach(radio => {
+        radio.checked = radio.value === backgroundConfig.backgroundType;
     });
-    
-    const uploadSection = document.getElementById('uploadBackgroundSection');
-    if (uploadSection) {
-        uploadSection.style.display = backgroundConfig.backgroundType === 'upload' ? 'block' : 'none';
-    }
-    
-    const blurSlider = document.getElementById('backgroundBlur');
-    if (blurSlider) {
-        blurSlider.value = backgroundConfig.blur;
-        updateBlurValue();
-    }
-    
-    const brightnessSlider = document.getElementById('backgroundBrightness');
-    if (brightnessSlider) {
-        brightnessSlider.value = backgroundConfig.brightness;
-        updateBrightnessValue();
-    }
-    
-    const contrastSlider = document.getElementById('backgroundContrast');
-    if (contrastSlider) {
-        contrastSlider.value = backgroundConfig.contrast;
-        updateContrastValue();
-    }
-    
-    const rotationEnabledCheckbox = document.getElementById('backgroundRotationEnabled');
-    if (rotationEnabledCheckbox) {
-        rotationEnabledCheckbox.checked = backgroundConfig.rotationEnabled;
-    }
-    
-    const rotationIntervalSlider = document.getElementById('backgroundRotationInterval');
-    if (rotationIntervalSlider) {
-        rotationIntervalSlider.value = backgroundConfig.rotationInterval;
-        updateRotationIntervalValue();
-    }
-    
-    if (backgroundConfig.rotationEnabled && backgroundConfig.selectedImages.length > 1) {
-        stopBackgroundRotation();
-        startBackgroundRotation();
-    }
-    
+
+    document.getElementById('uploadBackgroundSection').style.display =
+        backgroundConfig.backgroundType === 'upload' ? 'block' : 'none';
+
+    document.getElementById('backgroundBlur').value = backgroundConfig.blur;
+    document.getElementById('backgroundBrightness').value = backgroundConfig.brightness;
+    document.getElementById('backgroundContrast').value = backgroundConfig.contrast;
+    document.getElementById('backgroundRotationEnabled').checked = backgroundConfig.rotationEnabled;
+    document.getElementById('backgroundRotationInterval').value = backgroundConfig.rotationInterval;
+    updateBackgroundSliderLabels();
+
     refreshBackgroundList();
 }
 
-function updateBlurValue() {
-    const slider = document.getElementById('backgroundBlur');
-    const value = document.getElementById('blurValue');
-    if (value) value.textContent = slider.value;
-}
-
-function updateBrightnessValue() {
-    const slider = document.getElementById('backgroundBrightness');
-    const value = document.getElementById('brightnessValue');
-    if (value) value.textContent = slider.value + '%';
-}
-
-function updateContrastValue() {
-    const slider = document.getElementById('backgroundContrast');
-    const value = document.getElementById('contrastValue');
-    if (value) value.textContent = slider.value + '%';
-}
-
-function updateRotationIntervalValue() {
-    const slider = document.getElementById('backgroundRotationInterval');
-    const value = document.getElementById('rotationIntervalValue');
-    if (value) value.textContent = slider.value + 's';
-}
-
-function updateThemeBackgroundButtons() {
-    const themeButtons = document.querySelectorAll('.theme-bg-btn');
-    themeButtons.forEach(btn => btn.classList.remove('active'));
-    
-    const selectedBtn = Array.from(themeButtons).find(btn => btn.getAttribute('data-theme') === backgroundConfig.themeBackground);
-    if (selectedBtn) selectedBtn.classList.add('active');
-}
-
+// Export backgrounds to base64 for .yay file
 async function getBackgroundsForExport() {
     const backgrounds = {};
-    
+
     for (let fileName of backgroundConfig.selectedImages) {
         const base64 = await getBackgroundImage(fileName);
         if (base64) {
             backgrounds[fileName] = base64;
         }
     }
-    
+
     return {
         type: backgroundConfig.backgroundType,
         themeBackground: backgroundConfig.themeBackground,
@@ -592,16 +473,19 @@ async function getBackgroundsForExport() {
     };
 }
 
+// Import backgrounds from .yay file
 async function importBackgroundsFromExport(backgroundData) {
     if (!backgroundData) return;
-    
+
     try {
+        // Store images if present
         if (backgroundData.images) {
             for (let fileName in backgroundData.images) {
                 await storeBackgroundImage(fileName, backgroundData.images[fileName]);
             }
         }
-        
+
+        // Restore configuration
         backgroundConfig.backgroundType = backgroundData.type || 'theme';
         backgroundConfig.themeBackground = backgroundData.themeBackground || 'default';
         backgroundConfig.selectedImages = backgroundData.selectedImages || [];
@@ -610,9 +494,10 @@ async function importBackgroundsFromExport(backgroundData) {
         backgroundConfig.contrast = backgroundData.contrast || 100;
         backgroundConfig.rotationEnabled = backgroundData.rotationEnabled || false;
         backgroundConfig.rotationInterval = backgroundData.rotationInterval || 5;
-        
+
         saveBackgroundConfig();
-        
+
+        // Wait a moment for DOM to be ready
         setTimeout(() => {
             loadBackgroundSettingsValues();
             updateBackgroundDisplay();
@@ -621,5 +506,3 @@ async function importBackgroundsFromExport(backgroundData) {
         console.error('Error importing backgrounds:', error);
     }
 }
-
-window.addEventListener('load', initializeBackground);

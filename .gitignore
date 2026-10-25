@@ -1,0 +1,16 @@
+# Prevent old source and screenshots from being reintroduced.
+/old-version/
+
+# Old personal icon folder; the logos the dashboard needs live in assets/ai-logos/.
+/İkons/
+
+# Personal exports, credentials, and local tooling.
+*.yay
+.env
+.env.*
+/.claude/
+/.codex/
+/.capture-work/
+node_modules/
+Thumbs.db
+.DS_Store

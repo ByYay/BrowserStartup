@@ -1,27 +1,15 @@
 .weather-widget {
-    display: none;
-    min-height: 520px;
-    height: 520px;
+    display: none; /* Varsayılan olarak gizli */
+    min-height: 520px; /* 380px'den 520px'e çıkar - diğer widget'larla aynı */
+    height: 520px; /* Sabit yükseklik */
     width: 100%;
     box-sizing: border-box;
-    overflow: visible;
-    background: transparent;
+    overflow: visible; /* overflow-y: auto yerine visible */
+    background: transparent; /* Şeffaf yapıyoruz */
 }
 
 .weather-widget.active {
-    display: block;
-}
-
-.weather-container {
-    padding: 20px 16px;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    box-sizing: border-box;
-    justify-content: space-between;
-    overflow: visible;
-    background: transparent;
+    display: block; /* Aktif olduğunda göster */
 }
 
 .weather-container {
@@ -40,7 +28,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    margin-bottom: 8px; /* 10px'den 8px'e küçült */
 }
 
 .weather-location {
@@ -65,23 +53,23 @@
 .weather-main {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-    min-width: 0;
-    overflow: visible;
-    padding: 0 6px;
+    gap: 10px; /* Gap'i 12px'den 10px'e küçült */
+    margin-bottom: 10px; /* Margin'i 12px'den 10px'e küçült */
+    min-width: 0; /* Flex item'ın küçülmesine izin ver */
+    overflow: visible; /* overflow'u visible yap */
+    padding: 0 6px; /* Padding'i 8px'den 6px'e küçült */
 }
 
 .weather-icon-container {
     position: relative;
-    width: 70px;
-    height: 70px;
+    width: 70px; /* 80px'den 70px'e küçült */
+    height: 70px; /* 80px'den 70px'e küçült */
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    margin-left: 12px;
-    margin-right: 8px;
+    flex-shrink: 0; /* Küçülmeyi engelle */
+    margin-left: 12px; /* Sol margin'i 15px'den 12px'e küçült */
+    margin-right: 8px; /* Sağ margin'i 10px'den 8px'e küçült */
 }
 
 .weather-icon {
@@ -126,12 +114,12 @@
 .weather-temp {
     display: flex;
     align-items: baseline;
-    gap: 4px;
-    margin-bottom: 6px;
+    gap: 4px; /* Gap'i 5px'den 4px'e küçült */
+    margin-bottom: 6px; /* Margin'i 8px'den 6px'e küçült */
 }
 
 .temp-value {
-    font-size: 36px;
+    font-size: 36px; /* 42px'den 36px'e küçült */
     font-weight: 700;
     color: var(--text-color);
     line-height: 1;
@@ -159,22 +147,22 @@
 .weather-details {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 12px;
-    min-width: 0;
-    overflow: visible;
-    padding: 0 6px;
+    gap: 8px; /* Gap'i 10px'den 8px'e küçült */
+    margin-bottom: 12px; /* Margin'i 16px'den 12px'e küçült */
+    min-width: 0; /* Grid'in küçülmesine izin ver */
+    overflow: visible; /* overflow'u visible yap */
+    padding: 0 6px; /* Padding'i 8px'den 6px'e küçült */
 }
 
 .weather-detail-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 8px;
+    gap: 8px; /* Gap'i 10px'den 8px'e küçült */
+    padding: 8px; /* Padding'i 10px'den 8px'e küçült */
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: 8px;
+    border-radius: 8px; /* Border radius'u 10px'den 8px'e küçült */
     border: 1px solid rgba(255, 255, 255, 0.3);
     transition: all 0.3s ease;
 }
@@ -186,13 +174,13 @@
 }
 
 .detail-icon {
-    width: 28px;
-    height: 28px;
+    width: 28px; /* 32px'den 28px'e küçült */
+    height: 28px; /* 32px'den 28px'e küçült */
     display: flex;
     align-items: center;
     justify-content: center;
     background: linear-gradient(135deg, var(--primary-color), #2980b9);
-    border-radius: 7px;
+    border-radius: 7px; /* 8px'den 7px'e küçült */
     color: white;
     font-size: 14px;
 }
@@ -216,31 +204,31 @@
 }
 
 .weather-forecast {
-    margin-bottom: 8px;
+    margin-bottom: 8px; /* 12px'den 8px'e küçült */
 }
 
 .forecast-title {
-    font-size: 14px;
+    font-size: 14px; /* 15px'den 14px'e küçült */
     font-weight: 600;
     color: var(--text-color);
-    margin-bottom: 8px;
+    margin-bottom: 8px; /* 10px'den 8px'e küçült */
 }
 
 .forecast-container {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    padding-bottom: 4px;
+    gap: 6px; /* 8px'den 6px'e küçült */
+    padding-bottom: 4px; /* 5px'den 4px'e küçült */
 }
 
 .forecast-item {
     flex-shrink: 0;
-    width: 65px;
-    padding: 8px 5px;
+    width: 65px; /* 70px'den 65px'e küçült */
+    padding: 8px 5px; /* Padding'i küçült */
     background: rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border-radius: 10px;
+    border-radius: 10px; /* 12px'den 10px'e küçült */
     border: 1px solid rgba(255, 255, 255, 0.3);
     text-align: center;
     transition: all 0.3s ease;
@@ -253,16 +241,16 @@
 }
 
 .forecast-day {
-    font-size: 11px;
+    font-size: 11px; /* 12px'den 11px'e küçült */
     color: var(--text-secondary);
     font-weight: 500;
-    margin-bottom: 6px;
+    margin-bottom: 6px; /* 8px'den 6px'e küçült */
 }
 
 .forecast-icon {
-    font-size: 18px;
+    font-size: 18px; /* 20px'den 18px'e küçült */
     color: var(--primary-color);
-    margin-bottom: 5px;
+    margin-bottom: 5px; /* 6px'den 5px'e küçült */
     animation: forecastFloat 2s ease-in-out infinite;
 }
 
@@ -347,42 +335,4 @@
 .dark-mode .forecast-item:hover,
 .midnight-mode .forecast-item:hover {
     background: rgba(255, 255, 255, 0.1);
-}
-
-@media (max-width: 768px) {
-    .weather-widget {
-        min-height: 450px;
-        height: 450px;
-    }
-    
-    .weather-main {
-        flex-direction: column;
-        text-align: center;
-        gap: 15px;
-    }
-    
-    .weather-details {
-        grid-template-columns: 1fr;
-    }
-    
-    .forecast-container {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
-    }
-}
-
-@media (max-width: 480px) {
-    .weather-widget {
-        min-height: 400px;
-        height: 400px;
-    }
-    
-    .weather-container {
-        padding: 15px 12px;
-    }
-    
-    .forecast-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 4px;
-    }
 }

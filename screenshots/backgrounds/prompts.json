@@ -1,0 +1,13 @@
+{
+  "tool": "built-in image_gen",
+  "images": [
+    {
+      "file": "alpine-lake.webp",
+      "prompt": "Photorealistic alpine lake at blue hour, layered mountain silhouettes, pine forest, subtle reflections, wide 16:10 desktop wallpaper, calm dark navy and teal tones, uncluttered center for dashboard text, no people, no buildings, no text or logos."
+    },
+    {
+      "file": "coastal-dusk.webp",
+      "prompt": "Photorealistic ocean cliffs at dusk, soft lavender sky, distant coastal headlands and long exposure waves, wide 16:10 desktop wallpaper, muted indigo and dusky rose tones, uncluttered center for dashboard text, no people, no buildings, no text or logos."
+    }
+  ]
+}
